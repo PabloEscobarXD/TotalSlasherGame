@@ -8,10 +8,12 @@ public class MenuManager : MonoBehaviour
     public GameObject mainMenuCanvas;     // El menú con Jugar / Opciones / Salir
     public GameObject optionsCanvas;      // El panel de Opciones
 
-[Header("Primeros selectables")]
+    [Header("Primeros selectables")]
     public GameObject firstOptionSelectable;   // Primer slider (Música)
     public GameObject optionsButtonInMainMenu; // El botón Opciones en el menú principal
     public GameObject startGameButton; // El botón Opciones en el menú principal
+
+    private bool playerCanMove;
     void Start()
     {
         mainMenuCanvas.SetActive(true);
@@ -29,6 +31,7 @@ public class MenuManager : MonoBehaviour
 
     public void toggleOptionsCanvas()
     {
+        Scene currentScene = SceneManager.GetActiveScene();
         // Si está cerrado → Abrir
         if (!optionsCanvas.activeSelf)
         {
@@ -41,7 +44,7 @@ public class MenuManager : MonoBehaviour
         }
         else
         {
-            // Si está abierto → Cerrar
+            // Si está abierto → Cerrar 
             optionsCanvas.SetActive(false);
             mainMenuCanvas.SetActive(true);
 
@@ -57,3 +60,5 @@ public class MenuManager : MonoBehaviour
     }
 
 }
+
+

@@ -58,4 +58,17 @@ public class PlayerMovement : MonoBehaviour
         if (context.performed)
             rb.AddForce(Vector3.up * jumpForce);
     }
+    public void Pause(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            PauseManager menu = FindAnyObjectByType<PauseManager>();
+
+            if (menu != null)
+            {
+                menu.TogglePause();
+            }
+        }
+    }
+
 }
