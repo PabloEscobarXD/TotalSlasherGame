@@ -24,7 +24,7 @@ public class MenuManager : MonoBehaviour
 
     public void startGame()
     {
-        SceneManager.LoadScene("Test");
+        SceneManager.LoadScene("Nivel1");
     }
 
     public void toggleOptionsCanvas()
