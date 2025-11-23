@@ -551,6 +551,34 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 228867c2-3fe8-4dc0-a34c-008461583c3b
     m_ActionName: 'Player/AreaAttack[/XInputControllerWindows/buttonEast]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: b77074ca-6011-4d45-800a-0b7dbe1a9740
+    m_ActionName: 'Player/Pause[/XInputControllerWindows/start,/Keyboard/escape]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 88166119-fe5c-43a9-85c8-6126148a7ad2
+    m_ActionName: 'UI/Navigate[/XInputControllerWindows/leftStick,/XInputControllerWindows/dpad]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 94a476c8-0afd-46f0-9c8a-58875e188223
+    m_ActionName: 'UI/Submit[/XInputControllerWindows/buttonSouth,/Keyboard/enter]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 267579dc-e892-48a4-88bd-69e6d0aadf29
+    m_ActionName: 'UI/Cancel[/XInputControllerWindows/buttonEast,/Keyboard/escape]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 91fce7b0-48b7-4fef-a6fc-f63d68c06131
+    m_ActionName: 'UI/Point[/Mouse/position]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 3be1271f-08e7-413e-b7a3-bceb373a3053
+    m_ActionName: 'UI/Click[/Mouse/leftButton]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 08e5a11b-4645-4b9e-9a86-a5f06a1e5499
+    m_ActionName: 'UI/Pause[/XInputControllerWindows/start]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -781,10 +809,10 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.9717412, y: 0.47961453, z: 0.23604994}
-  m_Center: {x: -1.1966627, y: 0.4624558, z: 0.14629799}
+  m_Size: {x: 1.9717424, y: 0.61995745, z: 0.5954433}
+  m_Center: {x: -1.1966617, y: 0.5326255, z: 0.13640034}
 --- !u!114 &473924262
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1296,6 +1324,63 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1625428253
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2799604836315010812, guid: 26a89ec07889ac24e97c0dcd72420810, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 7.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2799604836315010812, guid: 26a89ec07889ac24e97c0dcd72420810, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.09
+      objectReference: {fileID: 0}
+    - target: {fileID: 2799604836315010812, guid: 26a89ec07889ac24e97c0dcd72420810, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.94
+      objectReference: {fileID: 0}
+    - target: {fileID: 2799604836315010812, guid: 26a89ec07889ac24e97c0dcd72420810, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2799604836315010812, guid: 26a89ec07889ac24e97c0dcd72420810, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2799604836315010812, guid: 26a89ec07889ac24e97c0dcd72420810, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2799604836315010812, guid: 26a89ec07889ac24e97c0dcd72420810, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2799604836315010812, guid: 26a89ec07889ac24e97c0dcd72420810, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2799604836315010812, guid: 26a89ec07889ac24e97c0dcd72420810, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2799604836315010812, guid: 26a89ec07889ac24e97c0dcd72420810, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8126738441057077512, guid: 26a89ec07889ac24e97c0dcd72420810, type: 3}
+      propertyPath: m_Name
+      value: Enemy Dummy (1)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 26a89ec07889ac24e97c0dcd72420810, type: 3}
 --- !u!1 &1783038410
 GameObject:
   m_ObjectHideFlags: 0
@@ -1471,3 +1556,4 @@ SceneRoots:
   - {fileID: 1423365136}
   - {fileID: 371375191}
   - {fileID: 7433486470004389565}
+  - {fileID: 1625428253}

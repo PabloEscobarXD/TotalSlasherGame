@@ -14,7 +14,7 @@ public class PlayerCombat : MonoBehaviour
     public float areaDashSpeed = 80f;
     public float areaDashDuration = 0.095f;
     public float maxChargeTime = 1.5f;
-    public float minChargeTime = 0.3f;
+    public float minChargeTime = 0.4f;
 
     [Header("Daño")]
     public float dashDamage = 25f;

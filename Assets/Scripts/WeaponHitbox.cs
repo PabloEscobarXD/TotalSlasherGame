@@ -12,9 +12,9 @@ public class WeaponHitbox : MonoBehaviour
     {
         alreadyHit.Clear(); // Limpiar registro al activarse
     }
-
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log("HOLA");
         // Verificar capa del enemigo
         if ((enemyLayer.value & (1 << other.gameObject.layer)) == 0)
             return;
