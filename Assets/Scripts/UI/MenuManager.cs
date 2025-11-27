@@ -28,6 +28,10 @@ public class MenuManager : MonoBehaviour
     {
         SceneManager.LoadScene("Nivel1");
     }
+    public void backToMenu()
+    {
+        SceneManager.LoadScene("Menu");
+    }
 
     public void toggleOptionsCanvas()
     {

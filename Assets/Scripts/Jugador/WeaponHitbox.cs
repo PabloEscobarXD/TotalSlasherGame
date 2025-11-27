@@ -24,6 +24,7 @@ public class WeaponHitbox : MonoBehaviour
         {
             alreadyHit.Add(dmg);
             dmg.TakeDamage(damage);
+            GetComponentInParent<FurySystem>()?.AddFury();
         }
     }
 }

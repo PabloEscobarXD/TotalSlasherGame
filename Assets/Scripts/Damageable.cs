@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections;
 
 public class Damageable : MonoBehaviour
@@ -7,10 +8,13 @@ public class Damageable : MonoBehaviour
     public float maxHealth = 100f;
     private float currentHealth;
 
-    [Header("Efecto visual de daño")]
-    public Color flashColor = Color.white;       // Color del parpadeo
-    public float flashDuration = 0.1f;           // Duración de cada flash
-    public int flashCount = 2;                   // Cuántas veces parpadea
+[Header("Efecto visual de daño")]
+    public Color flashColor = Color.white;
+    public float flashDuration = 0.1f;
+    public int flashCount = 2;
+
+    // Evento para notificar muerte
+    public event Action OnDeath;
 
     private Renderer rend;
     private Material matInstance;
@@ -20,11 +24,15 @@ public class Damageable : MonoBehaviour
     {
         currentHealth = maxHealth;
 
-        // Crear instancia única del material (para no afectar a otros objetos)
         rend = GetComponent<Renderer>();
-        matInstance = rend.material;
-        ColorUtility.TryParseHtmlString("#FF474C", out originalColor);
-        matInstance.color = originalColor;
+        if (rend != null)
+        {
+            matInstance = rend.material;
+
+            // Color original (si el mesh lo tiene)
+            ColorUtility.TryParseHtmlString("#FF474C", out originalColor);
+            matInstance.color = originalColor;
+        }
     }
 
     public void TakeDamage(float damage)
@@ -32,7 +40,8 @@ public class Damageable : MonoBehaviour
         currentHealth -= damage;
         Debug.Log($"{gameObject.name} recibió {damage} de daño. Vida restante: {currentHealth}");
 
-        StartCoroutine(FlashDamage());
+        if (rend != null)
+            StartCoroutine(FlashDamage());
 
         if (currentHealth <= 0)
         {
@@ -51,10 +60,20 @@ public class Damageable : MonoBehaviour
         }
     }
 
+    public bool IsDead()
+    {
+        return currentHealth <= 0;
+    }
+
     private void Die()
     {
         Debug.Log($"{gameObject.name} ha muerto.");
-        // Aquí puedes poner animación o destruir el objeto
+
+        // Lanza evento para que EnemyController o quien escuche actúe
+        OnDeath?.Invoke();
+
+        // Si quieres destruir inmediatamente:
         // Destroy(gameObject);
     }
+
 }

@@ -119,7 +119,10 @@ public class PlayerCombat : MonoBehaviour
         {
             Damageable dmg = target.GetComponent<Damageable>();
             if (dmg != null)
+            {
                 dmg.TakeDamage(dashDamage);
+                GetComponent<FurySystem>()?.AddFury();
+            }
         }
     }
 

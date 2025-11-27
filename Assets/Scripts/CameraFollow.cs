@@ -1,4 +1,4 @@
-using UnityEngine;
+锘縰sing UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
@@ -6,7 +6,7 @@ public class CameraFollow : MonoBehaviour
     public Vector3 offset = new Vector3(0, 5, -8);
     public float followSpeed = 10f;
     public float rotationSmooth = 5f;
-    public float maxFollowAngle = 60f;   // 羘gulo m醲imo para seguir la rotaci髇
+    public float maxFollowAngle = 60f;   // 脕ngulo m谩ximo para seguir la rotaci贸n
 
     private float currentYaw;
 
@@ -14,28 +14,28 @@ public class CameraFollow : MonoBehaviour
     {
         if (target == null) return;
 
-        // Direcci髇 de movimiento del jugador (proyectada en el plano XZ)
+        // Direcci贸n de movimiento del jugador (proyectada en el plano XZ)
         Vector3 forward = target.forward;
         forward.y = 0;
 
-        // Direcci髇 actual de la c醡ara
+        // Direcci贸n actual de la c谩mara
         Vector3 camForward = transform.forward;
         camForward.y = 0;
 
-        // 羘gulo entre c醡ara y jugador
+        // 脕ngulo entre c谩mara y jugador
         float angle = Vector3.Angle(camForward, forward);
 
-        // Si el 醤gulo es menor al l韒ite -> seguimos rotaci髇 del jugador
+        // Si el 谩ngulo es menor al l铆mite -> seguimos rotaci贸n del jugador
         if (angle < maxFollowAngle)
         {
             float targetYaw = target.eulerAngles.y;
             currentYaw = Mathf.LerpAngle(currentYaw, targetYaw, rotationSmooth * Time.deltaTime);
         }
 
-        // Rotaci髇 final de la c醡ara (cuando no sigue, se queda en su 鷏timo yaw)
+        // Rotaci贸n final de la c谩mara (cuando no sigue, se queda en su 煤ltimo yaw)
         Quaternion rotation = Quaternion.Euler(0, currentYaw, 0);
 
-        // Calculamos posici髇 en base al yaw actual
+        // Calculamos posici贸n en base al yaw actual
         Vector3 desiredPosition = target.position + rotation * offset;
 
         // Movimiento suave
