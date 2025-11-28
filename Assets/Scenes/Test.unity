@@ -129,6 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 40860822}
   - component: {fileID: 40860821}
+  - component: {fileID: 40860823}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -165,6 +166,73 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &40860823
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 40860820}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bab52693050d11b43aca3bab0f2dfc3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 371375198}
+  healthBarFill: {fileID: 2124452305}
+--- !u!1 &73277620
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 73277622}
+  - component: {fileID: 73277621}
+  m_Layer: 0
+  m_Name: ParryBox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!65 &73277621
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 73277620}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!4 &73277622
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 73277620}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.6913519, y: 1.6913519, z: 1.6913519}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 371375191}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &79972328
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -183,7 +251,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2799604836315010812, guid: 26a89ec07889ac24e97c0dcd72420810, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -14.78
+      value: -14.18
       objectReference: {fileID: 0}
     - target: {fileID: 2799604836315010812, guid: 26a89ec07889ac24e97c0dcd72420810, type: 3}
       propertyPath: m_LocalRotation.w
@@ -519,6 +587,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 640219774}
+  - {fileID: 73277622}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 86.264, z: 0}
 --- !u!114 &371375192
@@ -544,9 +613,12 @@ MonoBehaviour:
   areaMaxDamage: 60
   swordHitbox: {fileID: 473924262}
   swordActiveTime: 0.3
+  blockBox: {fileID: 73277620}
+  blockParticles: {fileID: 0}
+  blockRotateSpeed: 100
+  animator: {fileID: 640219777}
   isDashing: 0
   isCharging: 0
-  animator: {fileID: 640219777}
 --- !u!114 &371375193
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -688,6 +760,22 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 2c545e6a-07a1-41f5-8ebc-9102cb16e073
     m_ActionName: 'Player/CameraMovement[/XInputControllerWindows/rightStick]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 371375192}
+        m_TargetAssemblyTypeName: PlayerCombat, Assembly-CSharp
+        m_MethodName: Fury
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 61e4d4b5-1001-4bb5-a375-9829d29f5a0d
+    m_ActionName: 'Player/FuryAttack[/XInputControllerWindows1/rightShoulder]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -721,7 +809,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetingRange: 5
-  coneAngle: 80
+  coneAngle: 90
   enemyLayer:
     serializedVersion: 2
     m_Bits: 128
@@ -763,6 +851,10 @@ MonoBehaviour:
   furyGainPerHit: 0.1
   furyDecayRate: 0.25
   timeBeforeDecay: 3
+  furyDamageMultiplier: 2.5
+  slowmoTime: 2
+  slowmoScale: 0.4
+  furyModeActive: 0
 --- !u!114 &371375198
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -775,6 +867,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e17fae886dbfbc4488d5df68cf7fa635, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxHP: 100
+  currentHP: 0
   invincibleTime: 0.3
   knockbackForce: 10
   damage: 10
@@ -1104,7 +1198,7 @@ GameObject:
   - component: {fileID: 825109515}
   - component: {fileID: 825109511}
   m_Layer: 0
-  m_Name: HurtCube
+  m_Name: OuchieCube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1709,7 +1803,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 800, y: 600}
@@ -1954,7 +2048,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2799604836315010812, guid: 26a89ec07889ac24e97c0dcd72420810, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -18.84
+      value: -19.72
       objectReference: {fileID: 0}
     - target: {fileID: 2799604836315010812, guid: 26a89ec07889ac24e97c0dcd72420810, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2020,7 +2114,7 @@ RectTransform:
   m_GameObject: {fileID: 1694427855}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.23129803, y: 0.04214948, z: 0.45201}
+  m_LocalScale: {x: 0.42556524, y: 0.028369552, z: 0.45201}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2124452304}
@@ -2028,7 +2122,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -235.9, y: 157.4}
+  m_AnchoredPosition: {x: -188, y: 193.99994}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1694427857
@@ -2283,7 +2377,7 @@ RectTransform:
   m_GameObject: {fileID: 2064688985}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.23129803, y: 0.04214948, z: 0.45201}
+  m_LocalScale: {x: 0.23129803, y: 0.02836955, z: 0.45201}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1409262203}
@@ -2291,7 +2385,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 228.4, y: 157.4}
+  m_AnchoredPosition: {x: -266, y: 172}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2064688987
@@ -2307,7 +2401,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.6037736, g: 0.6037736, b: 0.6037736, a: 0.6392157}
+  m_Color: {r: 0.14150941, g: 0.14150941, b: 0.14150941, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2417,7 +2511,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2799604836315010812, guid: 26a89ec07889ac24e97c0dcd72420810, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 13.63
+      value: 12.08
       objectReference: {fileID: 0}
     - target: {fileID: 2799604836315010812, guid: 26a89ec07889ac24e97c0dcd72420810, type: 3}
       propertyPath: m_LocalPosition.y

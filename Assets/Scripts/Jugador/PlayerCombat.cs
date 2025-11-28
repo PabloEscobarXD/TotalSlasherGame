@@ -1,111 +1,114 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
 
-[RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(TargetingSystem))]
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerCombat : MonoBehaviour
 {
     [Header("Ataque dirigido")]
-    public float dashSpeed = 30f;       // velocidad de ataque dirigido
-    public float dashDuration = 0.2f;   // tiempo del dash
+    public float dashSpeed = 30f;
+    public float dashDuration = 0.2f;
 
-    [Header("Ataque en área (hold)")]
+    [Header("Ataque en área")]
     public float areaDashSpeed = 80f;
     public float areaDashDuration = 0.095f;
     public float maxChargeTime = 1.5f;
     public float minChargeTime = 0.4f;
 
-    [Header("Daño")]
+    [Header("Daño Base")]
     public float dashDamage = 25f;
     public float areaMinDamage = 20f;
     public float areaMaxDamage = 60f;
 
     [Header("Hitbox")]
     public WeaponHitbox swordHitbox;
-    public float swordActiveTime = 0.3f; // cuánto dura activa la hitbox en el ataque en área
+    public float swordActiveTime = 0.3f;
+
+    [Header("Bloqueo")]
+    public GameObject blockBox;
+    public ParticleSystem blockParticles;
+    public float blockRotateSpeed = 100f;
+
+    [Header("Referencias")]
+    public Animator animator;
+    private TargetingSystem targeting;
+    private Rigidbody rb;
+    private FurySystem fury;
 
     public bool isDashing = false;
     public bool isCharging = false;
-    private bool isBlocking = false;
     private float chargeTimer = 0f;
 
-    public Animator animator;
-    private TargetingSystem targetingSystem;
-    private Rigidbody rb;
     private Transform currentTarget;
 
     void Start()
     {
-        targetingSystem = GetComponent<TargetingSystem>();
+        targeting = GetComponent<TargetingSystem>();
         rb = GetComponent<Rigidbody>();
+        fury = GetComponent<FurySystem>();
     }
 
     void Update()
     {
         if (isCharging)
-        {
             chargeTimer += Time.deltaTime;
-        }
     }
 
     // ---------------- Bloqueo ----------------
-    public void Block(InputAction.CallbackContext context)
+    public void Block(InputAction.CallbackContext ctx)
     {
-        if(context.started)
+        if (ctx.started)
         {
             animator.SetTrigger("blockStart");
+            blockBox.SetActive(true);
         }
-        else if(context.performed)
+        else if (ctx.performed)
         {
             animator.SetBool("blockHold", true);
         }
-        else if (context.canceled)
+        else if (ctx.canceled)
         {
             animator.SetBool("blockHold", false);
+            blockBox.SetActive(false);
         }
-
     }
 
     // ---------------- Ataque dirigido ----------------
-    public void Attack(InputAction.CallbackContext context)
+    public void Attack(InputAction.CallbackContext ctx)
     {
-        if (context.performed && !isDashing)
+        if (ctx.performed && !isDashing)
         {
-            currentTarget = targetingSystem.GetNearestEnemy();
+            bool furyAttack = fury.IsFuryReady();
+
+            if (furyAttack)
+                fury.TriggerSlowmo();
+
+            currentTarget = targeting.GetNearestEnemy();
 
             if (currentTarget != null)
-            {
-                // Evitar corrutinas duplicadas
-                StopAllCoroutines();
-                StartCoroutine(DashTowardsTarget(currentTarget));
-            }
+                StartCoroutine(DashTowardsTarget(furyAttack));
             else
-            {
-                // Ataque básico sin target
                 animator.SetTrigger("attackDash");
-            }
         }
     }
 
-    private System.Collections.IEnumerator DashTowardsTarget(Transform target)
+    private IEnumerator DashTowardsTarget(bool furyAttack)
     {
         isDashing = true;
         animator.SetTrigger("attackDash");
 
         float elapsed = 0f;
 
-        while (elapsed < dashDuration && target != null)
+        while (elapsed < dashDuration && currentTarget != null)
         {
-            Vector3 direction = (target.position - transform.position).normalized;
-            direction.y = 0;
-            rb.linearVelocity = direction * dashSpeed;
+            Vector3 dir = (currentTarget.position - transform.position).normalized;
+            dir.y = 0;
 
-            if (direction.sqrMagnitude > 0.01f)
-            {
-                Quaternion lookRot = Quaternion.LookRotation(direction, Vector3.up);
-                rb.MoveRotation(Quaternion.Slerp(rb.rotation, lookRot, 0.3f));
-            }
+            rb.linearVelocity = dir * dashSpeed;
+
+            Quaternion rot = Quaternion.LookRotation(dir);
+            rb.MoveRotation(Quaternion.Slerp(rb.rotation, rot, 0.3f));
 
             elapsed += Time.deltaTime;
             yield return null;
@@ -114,87 +117,116 @@ public class PlayerCombat : MonoBehaviour
         rb.linearVelocity = Vector3.zero;
         isDashing = false;
 
-        // ✅ Aplicar daño al final del dash
-        if (target != null)
+        // Aplicar daño
+        if (currentTarget != null)
         {
-            Damageable dmg = target.GetComponent<Damageable>();
+            Damageable dmg = currentTarget.GetComponent<Damageable>();
             if (dmg != null)
             {
-                dmg.TakeDamage(dashDamage);
-                GetComponent<FurySystem>()?.AddFury();
+                float finalDamage = dashDamage * fury.GetDamageMultiplier();
+                dmg.TakeDamage(finalDamage);
+
+                if (furyAttack)
+                    fury.ConsumeFury();
+                else
+                    fury.AddFury();
             }
         }
     }
 
-    // ---------------- Ataque en área (hold + release) ----------------
-    public void AreaAttack(InputAction.CallbackContext context)
+    // ---------------- Ataque en Área ----------------
+    public void AreaAttack(InputAction.CallbackContext ctx)
     {
-        if (context.started && !isDashing)
+        if (ctx.started && !isDashing)
         {
-            // Comienza la carga
             isCharging = true;
             chargeTimer = 0f;
             animator.SetTrigger("areaChargeStart");
         }
-        else if (context.performed && isCharging)
+        else if (ctx.performed && isCharging)
         {
-            // Unity dispara esto cuando supera el pressPoint (0.1)
-            // Aquí solo ponemos el bool en true, no revisamos tiempos aún
             animator.SetBool("areaChargeHold", true);
         }
-        else if (context.canceled && isCharging)
+        else if (ctx.canceled && isCharging)
         {
-            // Soltar el botón
             isCharging = false;
             animator.SetBool("areaChargeHold", false);
 
             if (chargeTimer >= minChargeTime)
             {
-                // Ataque válido
-                animator.ResetTrigger("areaFailedStart");
+                float ratio = Mathf.Clamp01(chargeTimer / maxChargeTime);
+                bool furyAttack = fury.IsFuryReady();
+
+                if (furyAttack)
+                    fury.TriggerSlowmo();
+
                 animator.SetTrigger("areaAttackSweep");
 
-                float chargeRatio = Mathf.Clamp01(chargeTimer / maxChargeTime);
-                StartCoroutine(ExecuteAreaAttack(chargeRatio));
+                StartCoroutine(ExecuteAreaAttack(ratio, furyAttack));
             }
             else
             {
-                // Ataque fallido
                 animator.SetTrigger("areaFailedStart");
             }
         }
     }
-    private System.Collections.IEnumerator ExecuteAreaAttack(float chargeRatio)
+
+    private IEnumerator ExecuteAreaAttack(float ratio, bool furyAttack)
     {
         isDashing = true;
 
         float elapsed = 0f;
         Vector3 dashDir = transform.forward;
-        float finalSpeed = areaDashSpeed * (1f + chargeRatio);
-        float damage = Mathf.Lerp(areaMinDamage, areaMaxDamage, chargeRatio);
+        float speed = areaDashSpeed * (1f + ratio);
 
-        // ✅ Activar hitbox
+        float damage = Mathf.Lerp(areaMinDamage, areaMaxDamage, ratio);
+        damage *= fury.GetDamageMultiplier();
+
         swordHitbox.damage = damage;
-        swordHitbox.enemyLayer = targetingSystem.enemyLayer;
+        swordHitbox.enemyLayer = targeting.enemyLayer;
         swordHitbox.gameObject.SetActive(true);
 
-        // Movimiento del dash
         while (elapsed < areaDashDuration)
         {
-            rb.linearVelocity = dashDir * finalSpeed;
+            rb.linearVelocity = dashDir * speed;
             elapsed += Time.deltaTime;
             yield return null;
         }
 
         rb.linearVelocity = Vector3.zero;
-        isDashing = false; // <-- el movimiento termina aquí
+        isDashing = false;
 
-        // ✅ Mantener la hitbox activa solo por el tiempo que corresponda
         yield return new WaitForSeconds(swordActiveTime);
         swordHitbox.gameObject.SetActive(false);
+
+        if (furyAttack)
+            fury.ConsumeFury();
+        else
+            fury.AddFury();
     }
 
+    // ---------------- Bloqueo exitoso ----------------
+    public void OnBlockSuccess(Vector3 attackSource)
+    {
+        Vector3 dir = attackSource - transform.position;
+        dir.y = 0;
 
+        if (dir.sqrMagnitude > 0.01f)
+        {
+            Quaternion rot = Quaternion.LookRotation(dir);
+            transform.rotation = Quaternion.Slerp(transform.rotation, rot, blockRotateSpeed * Time.deltaTime);
+        }
 
+        blockParticles?.Play();
+        animator.SetTrigger("blockHit");
+    }
 
+    // ---------------- Input de Modo Furia ----------------
+    public void Fury(InputAction.CallbackContext ctx)
+    {
+        if (ctx.performed)
+            fury.SetFuryMode(true);
+        else if (ctx.canceled)
+            fury.SetFuryMode(false);
+    }
 }
