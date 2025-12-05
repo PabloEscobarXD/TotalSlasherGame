@@ -9,6 +9,9 @@ public class PlayerCombat : MonoBehaviour
     [Header("Ataque dirigido")]
     public float dashSpeed = 30f;
     public float dashDuration = 0.2f;
+    public float stopDistance = 1.5f;
+    public float directedAttackCooldown = 0.5f;
+    private bool canDirectedAttack = true;
 
     [Header("Ataque en área")]
     public float areaDashSpeed = 80f;
@@ -77,12 +80,17 @@ public class PlayerCombat : MonoBehaviour
     // ---------------- Ataque dirigido ----------------
     public void Attack(InputAction.CallbackContext ctx)
     {
-        if (ctx.performed && !isDashing)
+
+        if (ctx.performed && !isDashing && canDirectedAttack)
         {
+            StartCoroutine(DirectedAttackCooldown());
             bool furyAttack = fury.IsFuryReady();
 
             if (furyAttack)
+            {
                 fury.TriggerSlowmo();
+                fury.ConsumeFury();
+            }
 
             currentTarget = targeting.GetNearestEnemy();
 
@@ -102,9 +110,16 @@ public class PlayerCombat : MonoBehaviour
 
         while (elapsed < dashDuration && currentTarget != null)
         {
-            Vector3 dir = (currentTarget.position - transform.position).normalized;
-            dir.y = 0;
+            Vector3 toTarget = currentTarget.position - transform.position;
+            toTarget.y = 0;
 
+            float distance = toTarget.magnitude;
+
+            // --- NUEVO: si estamos demasiado cerca, detenemos el dash ---
+            if (distance <= stopDistance)
+                break;
+
+            Vector3 dir = toTarget.normalized;
             rb.linearVelocity = dir * dashSpeed;
 
             Quaternion rot = Quaternion.LookRotation(dir);
@@ -117,22 +132,19 @@ public class PlayerCombat : MonoBehaviour
         rb.linearVelocity = Vector3.zero;
         isDashing = false;
 
-        // Aplicar daño
+        // Aplicar daño si está dentro del rango permitido
         if (currentTarget != null)
         {
+            float finalDamage = dashDamage * fury.GetDamageMultiplier();
+
             Damageable dmg = currentTarget.GetComponent<Damageable>();
             if (dmg != null)
-            {
-                float finalDamage = dashDamage * fury.GetDamageMultiplier();
                 dmg.TakeDamage(finalDamage);
 
-                if (furyAttack)
-                    fury.ConsumeFury();
-                else
-                    fury.AddFury();
-            }
+            fury.AddFury();
         }
     }
+
 
     // ---------------- Ataque en Área ----------------
     public void AreaAttack(InputAction.CallbackContext ctx)
@@ -158,7 +170,11 @@ public class PlayerCombat : MonoBehaviour
                 bool furyAttack = fury.IsFuryReady();
 
                 if (furyAttack)
+                {
                     fury.TriggerSlowmo();
+                    fury.ConsumeFury();
+                }
+                    
 
                 animator.SetTrigger("areaAttackSweep");
 
@@ -198,11 +214,6 @@ public class PlayerCombat : MonoBehaviour
 
         yield return new WaitForSeconds(swordActiveTime);
         swordHitbox.gameObject.SetActive(false);
-
-        if (furyAttack)
-            fury.ConsumeFury();
-        else
-            fury.AddFury();
     }
 
     // ---------------- Bloqueo exitoso ----------------
@@ -216,8 +227,6 @@ public class PlayerCombat : MonoBehaviour
             Quaternion rot = Quaternion.LookRotation(dir);
             transform.rotation = Quaternion.Slerp(transform.rotation, rot, blockRotateSpeed * Time.deltaTime);
         }
-
-        blockParticles?.Play();
         animator.SetTrigger("blockHit");
     }
 
@@ -229,4 +238,11 @@ public class PlayerCombat : MonoBehaviour
         else if (ctx.canceled)
             fury.SetFuryMode(false);
     }
+    private IEnumerator DirectedAttackCooldown()
+    {
+        canDirectedAttack = false;
+        yield return new WaitForSeconds(directedAttackCooldown);
+        canDirectedAttack = true;
+    }
+
 }
