@@ -23,7 +23,7 @@ public class WeaponHitbox : MonoBehaviour
         if (dmg != null && !alreadyHit.Contains(dmg))
         {
             alreadyHit.Add(dmg);
-            dmg.TakeDamage(damage);
+            dmg.TakeDamage(damage, transform.position);
             GetComponentInParent<FurySystem>()?.AddFury();
         }
     }

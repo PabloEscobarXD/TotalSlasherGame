@@ -1,7 +1,10 @@
 using UnityEngine;
 public class DeadState : EnemyState
 {
-    public DeadState(EnemyController enemy) : base(enemy) { }
+    public DeadState(EnemyController enemy) : base(enemy) 
+    {
+        this.enemy = enemy;
+    }
 
     public override void Enter()
     {

@@ -23,30 +23,25 @@ public class Damageable : MonoBehaviour
     private void Start()
     {
         currentHealth = maxHealth;
-
         rend = GetComponent<Renderer>();
         if (rend != null)
         {
             matInstance = rend.material;
-
-            // Color original (si el mesh lo tiene)
-            ColorUtility.TryParseHtmlString("#FF474C", out originalColor);
-            matInstance.color = originalColor;
+            originalColor = matInstance.color; // leer el color que ya tiene
         }
     }
 
-    public void TakeDamage(float damage)
+    public void TakeDamage(float damage, Vector3 attackerPosition)
     {
         currentHealth -= damage;
-        Debug.Log($"{gameObject.name} recibió {damage} de daño. Vida restante: {currentHealth}");
+
+        GetComponent<EnemyController>()?.ApplyKnockback(attackerPosition);
 
         if (rend != null)
             StartCoroutine(FlashDamage());
 
         if (currentHealth <= 0)
-        {
             Die();
-        }
     }
 
     private IEnumerator FlashDamage()

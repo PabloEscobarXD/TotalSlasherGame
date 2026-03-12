@@ -139,7 +139,7 @@ public class PlayerCombat : MonoBehaviour
 
             Damageable dmg = currentTarget.GetComponent<Damageable>();
             if (dmg != null)
-                dmg.TakeDamage(finalDamage);
+                dmg.TakeDamage(finalDamage, transform.position);
 
             fury.AddFury();
         }

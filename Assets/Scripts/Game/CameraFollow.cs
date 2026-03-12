@@ -42,6 +42,6 @@ public class CameraFollow : MonoBehaviour
         transform.position = Vector3.Lerp(transform.position, desiredPosition, followSpeed * Time.deltaTime);
 
         // Que mire al jugador (puedes ajustar altura si lo deseas)
-        transform.LookAt(target.position + Vector3.up * 1.5f);
+        transform.LookAt(target.position + Vector3.up * 3f);
     }
 }

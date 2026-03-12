@@ -5,7 +5,10 @@ public class EvaluateState : EnemyState
     private float timer;
     private float evaluateCooldown = 1f;   // 🔹 Evaluar solo cada 1 segundo
 
-    public EvaluateState(EnemyController enemy) : base(enemy) { }
+    public EvaluateState(EnemyController enemy) : base(enemy) 
+    {
+        this.enemy = enemy;
+    }
 
     public override void Enter()
     {
