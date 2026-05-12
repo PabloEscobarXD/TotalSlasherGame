@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
+using static Damageable;
 
 public class WeaponHitbox : MonoBehaviour
 {
@@ -23,7 +25,7 @@ public class WeaponHitbox : MonoBehaviour
         if (dmg != null && !alreadyHit.Contains(dmg))
         {
             alreadyHit.Add(dmg);
-            dmg.TakeDamage(damage, transform.position);
+            dmg.TakeDamage(damage, transform.position, "Player", AttackType.Normal);
             GetComponentInParent<FurySystem>()?.AddFury();
         }
     }

@@ -19,12 +19,7 @@ public class EvaluateState : EnemyState
     public override void Update()
     {
         timer += Time.deltaTime;
-
-        // 🔹 Si aún no pasó el tiempo, no hacer nada
-        if (timer < evaluateCooldown)
-            return;
-
-        // Reset timer
+        if (timer < evaluateCooldown) return;
         timer = 0f;
 
         if (enemy.IsDead())
@@ -33,14 +28,28 @@ public class EvaluateState : EnemyState
             return;
         }
 
-        // 🔹 Si ya está cerca → Melee
+        // Enemigo que prefiere distancia: volver a ranged si hay aliados rodeando
+        if (enemy.prefersRanged)
+        {
+            int meleeCount = EnemyManager.Instance?.GetMeleeCount() ?? 0;
+            bool hitRecently = enemy.GetTimeSinceLastHit() < 5f;
+            Debug.Log($"prefersRanged eval: timeSinceHit={enemy.GetTimeSinceLastHit():F1} hitRecently={hitRecently} meleeCount={meleeCount}");
+
+            if (!hitRecently && meleeCount >= 1)
+            {
+                enemy.fsm.ChangeState(new RangedState(enemy));
+                return;
+            }
+            enemy.fsm.ChangeState(new MeleeState(enemy));
+            return;
+        }
+
         if (enemy.IsPlayerClose())
         {
             enemy.fsm.ChangeState(new MeleeState(enemy));
             return;
         }
 
-        // 🔹 Si no está cerca → igualmente ir a Melee pero para acercarse
         enemy.fsm.ChangeState(new MeleeState(enemy));
     }
 

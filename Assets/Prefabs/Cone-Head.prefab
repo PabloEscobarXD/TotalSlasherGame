@@ -34,7 +34,8 @@ Transform:
   m_LocalPosition: {x: 19.89785, y: 1, z: 12.85}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2278169924463552187}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1396222975461893938
@@ -105,7 +106,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -129,6 +130,7 @@ MonoBehaviour:
   flashColor: {r: 1, g: 1, b: 1, a: 1}
   flashDuration: 0.1
   flashCount: 2
+  isBlocking: 0
 --- !u!114 &7687156321727363612
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -141,10 +143,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6554de12576802947ab97a9ee4364ff8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  meleeRange: 40
+  meleeRange: 100
   rangedRange: 10
-  stopDistance: 5
+  stopDistance: 4
   moveSpeed: 15
+  retreatSpeed: 20
+  knockbackDistance: 1.5
+  knockbackDuration: 0.15
+  attackDuration: 0.6
+  projectilePrefab: {fileID: 7383451327138414408, guid: 06514eef409c9c542831ca7fb040014d, type: 3}
+  firePoint: {fileID: 2278169924463552187}
+  prefersRanged: 0
+  hitsToBlock: 3
+  blockIdleTimeout: 2
+  hitsToCounterAttack: 3
+  isBlocking: 0
 --- !u!54 &4304310566147311524
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -170,5 +183,36 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 84
-  m_CollisionDetection: 0
+  m_Constraints: 80
+  m_CollisionDetection: 1
+--- !u!1 &6533112010601827399
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2278169924463552187}
+  m_Layer: 7
+  m_Name: firepoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2278169924463552187
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6533112010601827399}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.719}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 292248272095179922}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

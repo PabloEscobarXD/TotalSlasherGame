@@ -14,6 +14,9 @@ public class PlayerMovement : MonoBehaviour
 
     public PlayerCombat playerCombatIntance;
 
+    public Vector3 WorldMoveDirection { get; private set; }
+
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -27,24 +30,19 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(!playerCombatIntance.isCharging && !playerCombatIntance.isDashing)
+        Vector3 camForward = Camera.main.transform.forward; camForward.y = 0; camForward.Normalize();
+        Vector3 camRight = Camera.main.transform.right; camRight.y = 0; camRight.Normalize();
+
+        // WorldMoveDirection se actualiza SIEMPRE, sin importar el estado
+        WorldMoveDirection = (camForward * moveInput.y + camRight * moveInput.x).normalized;
+
+        // El movimiento físico sí respeta las condiciones
+        if (!playerCombatIntance.isCharging && !playerCombatIntance.isDashing || playerCombatIntance.isTornado)
         {
             Vector3 velocity = rb.linearVelocity;
-
-            // Dirección cámara (XZ)
-            Vector3 camForward = Camera.main.transform.forward;
-            camForward.y = 0;
-            camForward.Normalize();
-
-            Vector3 camRight = Camera.main.transform.right;
-            camRight.y = 0;
-            camRight.Normalize();
-
-            // Movimiento relativo a cámara
-            Vector3 move = (camForward * moveInput.y + camRight * moveInput.x).normalized * moveForce;
+            Vector3 move = WorldMoveDirection * moveForce;
             rb.linearVelocity = new Vector3(move.x, velocity.y, move.z);
 
-            // Rotación hacia dirección de movimiento
             if (move.sqrMagnitude > 0.01f)
             {
                 Quaternion targetRotation = Quaternion.LookRotation(move, Vector3.up);

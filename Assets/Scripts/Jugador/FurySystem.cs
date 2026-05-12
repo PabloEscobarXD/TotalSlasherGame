@@ -46,7 +46,7 @@ public class FurySystem : MonoBehaviour
     // -------------------- Estado de Furia --------------------
     public bool IsFuryReady()
     {
-        return furyModeActive && fury >= 1f;
+        return furyModeActive && fury >= 0.7f;
     }
 
     public float GetDamageMultiplier()
@@ -89,5 +89,10 @@ public class FurySystem : MonoBehaviour
         Time.fixedDeltaTime = 0.02f;
 
         slowmoActive = false;
+    }
+
+    public void ConsumeFuryPartial(float amount)
+    {
+        fury = Mathf.Clamp01(fury - amount);
     }
 }

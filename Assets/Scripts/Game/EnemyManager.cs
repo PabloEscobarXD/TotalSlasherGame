@@ -13,12 +13,21 @@ public class EnemyManager : MonoBehaviour
     public float globalCooldown = 2.0f; // espera entre olas de ataques
 
     private List<EnemyController> meleeEnemies = new List<EnemyController>();
+    private List<EnemyController> rangedEnemies = new List<EnemyController>();
+    private List<EnemyController> allEnemies = new List<EnemyController>();
     private bool attackWaveInProgress = false;
+
+    [Header("Configuración")]
+    public int maxRangedEnemies = 2;
 
     private void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
+    }
+    public int GetMeleeCount()
+    {
+        return meleeEnemies.Count;
     }
 
     public void RegisterMeleeEnemy(EnemyController enemy)
@@ -42,9 +51,9 @@ public class EnemyManager : MonoBehaviour
     {
         attackWaveInProgress = true;
 
-        // Filtrar candidatos válidos
+        // Excluir enemigos que están bloqueando
         List<EnemyController> candidates = meleeEnemies.FindAll(e =>
-            e != null && !e.IsDead()
+            e != null && !e.IsDead() && !e.isBlocking
         );
 
         if (candidates.Count == 0)
@@ -82,6 +91,74 @@ public class EnemyManager : MonoBehaviour
         {
             int j = Random.Range(0, i + 1);
             (list[i], list[j]) = (list[j], list[i]);
+        }
+    }
+
+    private IEnumerator AssignRangedEnemies()
+    {
+        // Esperar a que todos los enemigos hagan su Start
+        yield return new WaitForSeconds(0.1f);
+
+        Debug.Log($"Total enemigos registrados: {allEnemies.Count}"); // verificar que llegan todos
+
+        List<EnemyController> snapshot = new List<EnemyController>(allEnemies);
+        Shuffle(snapshot);
+        int count = Mathf.Min(maxRangedEnemies, snapshot.Count);
+
+        for (int i = 0; i < count; i++)
+        {
+            snapshot[i].prefersRanged = true;
+            snapshot[i].fsm.ChangeState(new RangedState(snapshot[i]));
+            Debug.Log($"{snapshot[i].gameObject.name} asignado como Ranged");
+        }
+    }
+
+    public void RegisterEnemy(EnemyController enemy)
+    {
+        if (!allEnemies.Contains(enemy))
+            allEnemies.Add(enemy);
+    }
+
+    public void RegisterRangedEnemy(EnemyController enemy)
+    {
+        if (!rangedEnemies.Contains(enemy))
+            rangedEnemies.Add(enemy);
+    }
+
+    public void UnregisterRangedEnemy(EnemyController enemy)
+    {
+        rangedEnemies.Remove(enemy);
+    }
+
+    public int GetRangedCount() => rangedEnemies.Count;
+
+    public void SetMaxRanged(int value)
+    {
+        maxRangedEnemies = value;
+    }
+
+    public void ClearAllEnemies()
+    {
+        meleeEnemies.Clear();
+        rangedEnemies.Clear();
+        allEnemies.Clear();
+        attackWaveInProgress = false;
+    }
+
+    public void AssignRanged(int count)
+    {
+        // Limpiar referencias nulas antes de asignar
+        allEnemies.RemoveAll(e => e == null);
+
+        List<EnemyController> snapshot = new List<EnemyController>(allEnemies);
+        Shuffle(snapshot);
+        int total = Mathf.Min(count, snapshot.Count);
+
+        for (int i = 0; i < total; i++)
+        {
+            snapshot[i].prefersRanged = true;
+            snapshot[i].fsm.ChangeState(new RangedState(snapshot[i]));
+            Debug.Log($"{snapshot[i].gameObject.name} asignado como Ranged");
         }
     }
 }

@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
+using System.Collections.Generic;
+using static Damageable;
+using TMPro;
 
 [RequireComponent(typeof(TargetingSystem))]
 [RequireComponent(typeof(Rigidbody))]
@@ -13,11 +16,27 @@ public class PlayerCombat : MonoBehaviour
     public float directedAttackCooldown = 0.5f;
     private bool canDirectedAttack = true;
 
+    [Header("Dash Lineal de Furia")]
+    public float furyLineDashSpeed = 60f;
+    public float furyLineDashDuration = 0.3f;
+    public float furyLineDashDamage = 35f;
+    public float furyLineDashWidth = 1.5f; // ancho de la hitbox lineal
+    public bool isFuryDashing = false; // agregar al header de campos
+
     [Header("Ataque en área")]
     public float areaDashSpeed = 80f;
     public float areaDashDuration = 0.095f;
     public float maxChargeTime = 1.5f;
     public float minChargeTime = 0.4f;
+    public float areaBurstMaxRadius = 5f;
+
+    [Header("Tornado de Furia")]
+    public float tornadoRadius = 4f;
+    public float tornadoDamage = 10f;
+    public int tornadoHits = 5;
+    public float tornadoInterval = 0.2f;
+    public float tornadoMoveSpeed = 4f;
+    public bool isTornado = false;
 
     [Header("Daño Base")]
     public float dashDamage = 25f;
@@ -35,27 +54,87 @@ public class PlayerCombat : MonoBehaviour
 
     [Header("Referencias")]
     public Animator animator;
+    public TMP_Text comboText;
+    public GameObject comboGroup;
     private TargetingSystem targeting;
     private Rigidbody rb;
     private FurySystem fury;
+
+    [Header("Combo")]
+    private bool isComboActive = false;
+    private float comboTimer = 0f;
+    public float comboTimeLimit = 5f;
+    public int comboCount = 0;
+
 
     public bool isDashing = false;
     public bool isCharging = false;
     private float chargeTimer = 0f;
 
     private Transform currentTarget;
+    private bool attackCancelled = false;
+    private CameraFollow cameraFollow;
+
+    [Header("Buffer de Input")]
+    public float inputBufferTime = 0.3f;
+    private bool attackBuffered = false;
+    private float attackBufferTimer = 0f;
+    private PlayerMovement movement;
 
     void Start()
     {
         targeting = GetComponent<TargetingSystem>();
         rb = GetComponent<Rigidbody>();
         fury = GetComponent<FurySystem>();
+        cameraFollow = Camera.main.GetComponent<CameraFollow>();
+        comboText.text = comboCount.ToString();
+        comboGroup.SetActive(false);
+        movement = GetComponent<PlayerMovement>();
     }
 
     void Update()
     {
+        comboText.text = comboCount.ToString();
+
         if (isCharging)
+        {
             chargeTimer += Time.deltaTime;
+            if (movement != null && movement.WorldMoveDirection.sqrMagnitude > 0.01f)
+            {
+                Quaternion targetRot = Quaternion.LookRotation(movement.WorldMoveDirection);
+                rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRot, 0.2f));
+            }
+        }
+
+        // Buffer de ataque
+        if (attackBuffered)
+        {
+            attackBufferTimer -= Time.deltaTime;
+            if (attackBufferTimer <= 0f)
+            {
+                attackBuffered = false;
+                return;
+            }
+            if (!isDashing && canDirectedAttack)
+            {
+                attackBuffered = false;
+                ExecuteAttack();
+            }
+        }
+
+        if (isComboActive)
+        {
+            comboGroup.SetActive(true);
+            comboTimer += Time.deltaTime;
+            if(comboTimer >= comboTimeLimit)
+            {
+                ScoreManager.Instance?.RegisterCombo(comboCount);
+                comboCount = 0;
+                comboTimer = 0f;
+                isComboActive = false;
+                comboGroup.SetActive(false);
+            }
+        }
     }
 
     // ---------------- Bloqueo ----------------
@@ -63,12 +142,39 @@ public class PlayerCombat : MonoBehaviour
     {
         if (ctx.started)
         {
-            animator.SetTrigger("blockStart");
-            blockBox.SetActive(true);
-        }
-        else if (ctx.performed)
-        {
+            // Solo los ataques de furia son incancelables
+            if (isTornado || isFuryDashing) return;
+            if (isDashing && fury.IsFuryReady()) return; // está en FuryLineDash
+
+            // Cancelar todo lo demás
+            if (isDashing || isCharging)
+                CancelAreaAttack();
+
+            // Detener cualquier corrutina restante y limpiar estado
+            StopAllCoroutines();
+            rb.linearVelocity = Vector3.zero;
+            isDashing = false;
+            isCharging = false;
+            attackBuffered = false;
+            canDirectedAttack = true;
+            swordHitbox.gameObject.SetActive(false);
+
+            int playerLayer = gameObject.layer;
+            int enemyLayer = LayerMask.NameToLayer("Enemy");
+            Physics.IgnoreLayerCollision(playerLayer, enemyLayer, false);
+
+            // Giro hacia enemigo más cercano si hay uno en rango
+            Transform nearest = targeting.GetNearestEnemy();
+            if (nearest != null)
+            {
+                Vector3 dir = (nearest.position - transform.position);
+                dir.y = 0;
+                if (dir.sqrMagnitude > 0.01f)
+                    rb.MoveRotation(Quaternion.LookRotation(dir.normalized));
+            }
+
             animator.SetBool("blockHold", true);
+            blockBox.SetActive(true);
         }
         else if (ctx.canceled)
         {
@@ -80,51 +186,69 @@ public class PlayerCombat : MonoBehaviour
     // ---------------- Ataque dirigido ----------------
     public void Attack(InputAction.CallbackContext ctx)
     {
-
-        if (ctx.performed && !isDashing && canDirectedAttack)
+        if (ctx.performed)
         {
-            StartCoroutine(DirectedAttackCooldown());
-            bool furyAttack = fury.IsFuryReady();
-
-            if (furyAttack)
-            {
-                fury.TriggerSlowmo();
-                fury.ConsumeFury();
-            }
-
-            currentTarget = targeting.GetNearestEnemy();
-
-            if (currentTarget != null)
-                StartCoroutine(DashTowardsTarget(furyAttack));
+            CancelBlock();
+            if (!isDashing && canDirectedAttack)
+                ExecuteAttack();
             else
-                animator.SetTrigger("attackDash");
+            {
+                // Guardar en buffer
+                attackBuffered = true;
+                attackBufferTimer = inputBufferTime;
+            }
         }
+    }
+
+    private void ExecuteAttack()
+    {
+        StartCoroutine(DirectedAttackCooldown());
+        bool furyAttack = fury.IsFuryReady();
+
+        if (furyAttack)
+        {
+            fury.TriggerSlowmo();
+            fury.ConsumeFuryPartial(0.5f);
+        }
+
+        // Usar dirección del stick para el targeting
+        Vector3 attackDir = movement != null ? movement.WorldMoveDirection : transform.forward;
+        currentTarget = targeting.GetNearestEnemyInDirection(attackDir);
+
+        // Rotar hacia la dirección del stick si hay input
+        if (attackDir.sqrMagnitude > 0.01f)
+            rb.MoveRotation(Quaternion.LookRotation(attackDir));
+
+        if (furyAttack)
+            StartCoroutine(DashTowardsTarget(furyAttack));
+        else if (currentTarget != null)
+            StartCoroutine(DashTowardsTarget(furyAttack));
+        else
+            animator.SetTrigger("attackDash"); // dash en el lugar si no hay enemigos
     }
 
     private IEnumerator DashTowardsTarget(bool furyAttack)
     {
+        if (furyAttack)
+        {
+            yield return StartCoroutine(FuryLineDash());
+            yield break;
+        }
+
+        // Dash normal (código existente)
         isDashing = true;
         animator.SetTrigger("attackDash");
-
         float elapsed = 0f;
 
         while (elapsed < dashDuration && currentTarget != null)
         {
             Vector3 toTarget = currentTarget.position - transform.position;
             toTarget.y = 0;
-
-            float distance = toTarget.magnitude;
-
-            // --- NUEVO: si estamos demasiado cerca, detenemos el dash ---
-            if (distance <= stopDistance)
-                break;
+            if (toTarget.magnitude <= stopDistance) break;
 
             Vector3 dir = toTarget.normalized;
             rb.linearVelocity = dir * dashSpeed;
-
-            Quaternion rot = Quaternion.LookRotation(dir);
-            rb.MoveRotation(Quaternion.Slerp(rb.rotation, rot, 0.3f));
-
+            rb.MoveRotation(Quaternion.Slerp(rb.rotation, Quaternion.LookRotation(dir), 0.3f));
             elapsed += Time.deltaTime;
             yield return null;
         }
@@ -132,25 +256,82 @@ public class PlayerCombat : MonoBehaviour
         rb.linearVelocity = Vector3.zero;
         isDashing = false;
 
-        // Aplicar daño si está dentro del rango permitido
         if (currentTarget != null)
         {
-            float finalDamage = dashDamage * fury.GetDamageMultiplier();
-
             Damageable dmg = currentTarget.GetComponent<Damageable>();
             if (dmg != null)
-                dmg.TakeDamage(finalDamage, transform.position);
-
+            {
+                if(comboCount == 0)
+                    isComboActive = true;
+                comboCount++;
+                comboTimer = 0;
+                dmg.TakeDamage(dashDamage, transform.position, "Player", AttackType.Normal);
+            }
             fury.AddFury();
         }
     }
 
+    private IEnumerator FuryLineDash()
+    {
+        isDashing = true;
+        isFuryDashing = true;
+
+        int playerLayer = gameObject.layer;
+        int enemyLayer = LayerMask.NameToLayer("Enemy");
+        Physics.IgnoreLayerCollision(playerLayer, enemyLayer, true); // <-- agregar
+
+        Vector3 dashDir = transform.forward;
+        float elapsed = 0f;
+        HashSet<Damageable> alreadyHit = new HashSet<Damageable>();
+
+        while (elapsed < furyLineDashDuration)
+        {
+            rb.linearVelocity = dashDir * furyLineDashSpeed;
+
+            Collider[] hits = Physics.OverlapCapsule(
+                transform.position,
+                transform.position + dashDir * 1.5f,
+                furyLineDashWidth,
+                targeting.enemyLayer
+            );
+
+            foreach (Collider col in hits)
+            {
+                Damageable dmg = col.GetComponent<Damageable>();
+                if (dmg != null && !alreadyHit.Contains(dmg))
+                {
+                    alreadyHit.Add(dmg);
+                    dmg.TakeDamage(furyLineDashDamage, transform.position, "Player", AttackType.Normal);
+                    fury.AddFury();
+                }
+            }
+
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        rb.linearVelocity = Vector3.zero;
+        Physics.IgnoreLayerCollision(playerLayer, enemyLayer, false);
+        isDashing = false;
+        isFuryDashing = true;
+    }
 
     // ---------------- Ataque en Área ----------------
     public void AreaAttack(InputAction.CallbackContext ctx)
     {
-        if (ctx.started && !isDashing)
+        if (ctx.started && !isDashing && !isTornado)
         {
+            CancelBlock();
+            bool furyAttack = fury.IsFuryReady();
+
+            if (furyAttack)
+            {
+                fury.TriggerSlowmo();
+                fury.ConsumeFury();
+                StartCoroutine(ExecuteAreaAttack(0f, true));
+                return;
+            }
+
             isCharging = true;
             chargeTimer = 0f;
             animator.SetTrigger("areaChargeStart");
@@ -159,61 +340,164 @@ public class PlayerCombat : MonoBehaviour
         {
             animator.SetBool("areaChargeHold", true);
         }
-        else if (ctx.canceled && isCharging)
+        else if (ctx.canceled)
         {
+            if (attackCancelled) { attackCancelled = false; return; }
+            if (!isCharging) return;
+
             isCharging = false;
             animator.SetBool("areaChargeHold", false);
 
-            if (chargeTimer >= minChargeTime)
-            {
-                float ratio = Mathf.Clamp01(chargeTimer / maxChargeTime);
-                bool furyAttack = fury.IsFuryReady();
+            float ratio = Mathf.Clamp01(chargeTimer / maxChargeTime);
+            animator.SetTrigger("areaAttackSweep");
 
-                if (furyAttack)
-                {
-                    fury.TriggerSlowmo();
-                    fury.ConsumeFury();
-                }
-                    
+            // Capturar dirección ANTES de iniciar la corrutina
+            Vector3 dashDir = (movement != null && movement.WorldMoveDirection.sqrMagnitude > 0.01f)
+                ? movement.WorldMoveDirection
+                : transform.forward;
 
-                animator.SetTrigger("areaAttackSweep");
+            // Rotar hacia esa dirección
+            rb.MoveRotation(Quaternion.LookRotation(dashDir));
 
-                StartCoroutine(ExecuteAreaAttack(ratio, furyAttack));
-            }
-            else
-            {
-                animator.SetTrigger("areaFailedStart");
-            }
+            StartCoroutine(ExecuteAreaAttack(ratio, false, dashDir));
         }
     }
-
-    private IEnumerator ExecuteAreaAttack(float ratio, bool furyAttack)
+    private IEnumerator ExecuteAreaAttack(float ratio, bool furyAttack, Vector3 dashDir = default)
     {
+        if (furyAttack)
+        {
+            yield return StartCoroutine(FuryTornado());
+            yield break;
+        }
+
+        if (dashDir == default || dashDir.sqrMagnitude < 0.01f)
+            dashDir = transform.forward;
+
         isDashing = true;
 
+        int playerLayer = gameObject.layer;
+        int enemyLayer = LayerMask.NameToLayer("Enemy");
+        Physics.IgnoreLayerCollision(playerLayer, enemyLayer, true);
+
         float elapsed = 0f;
-        Vector3 dashDir = transform.forward;
-        float speed = areaDashSpeed * (1f + ratio);
-
         float damage = Mathf.Lerp(areaMinDamage, areaMaxDamage, ratio);
-        damage *= fury.GetDamageMultiplier();
-
-        swordHitbox.damage = damage;
-        swordHitbox.enemyLayer = targeting.enemyLayer;
-        swordHitbox.gameObject.SetActive(true);
+        HashSet<Damageable> alreadyHit = new HashSet<Damageable>();
 
         while (elapsed < areaDashDuration)
         {
-            rb.linearVelocity = dashDir * speed;
+            rb.linearVelocity = dashDir * areaDashSpeed;
+
+            // Burst activo durante todo el dash
+            Collider[] hits = Physics.OverlapSphere(transform.position, areaBurstMaxRadius, targeting.enemyLayer);
+            int hitCount = 0;
+            foreach (Collider col in hits)
+            {
+                if (hitCount >= 4) break; // máximo 4 enemigos
+                Damageable dmg = col.GetComponent<Damageable>();
+                if (dmg != null && !alreadyHit.Contains(dmg))
+                {
+                    alreadyHit.Add(dmg);
+                    dmg.TakeDamage(damage, transform.position, "Player", AttackType.Normal);
+                    hitCount++;
+                }
+            }
+
             elapsed += Time.deltaTime;
             yield return null;
         }
 
         rb.linearVelocity = Vector3.zero;
+        Physics.IgnoreLayerCollision(playerLayer, enemyLayer, false);
         isDashing = false;
 
+        swordHitbox.gameObject.SetActive(true);
         yield return new WaitForSeconds(swordActiveTime);
         swordHitbox.gameObject.SetActive(false);
+    }
+    private IEnumerator FuryTornado()
+    {
+        PlayerDamageReceiver receiver = GetComponent<PlayerDamageReceiver>();
+        PlayerMovement movement = GetComponent<PlayerMovement>();
+
+        if (receiver != null)
+        {
+            receiver.isUntouchable = true;
+            receiver.damageReductionMultiplier = 0.4f;
+        }
+
+        float originalSpeed = 0f;
+        if (movement != null)
+        {
+            originalSpeed = movement.moveForce;
+            movement.moveForce = tornadoMoveSpeed;
+        }
+
+        isTornado = true;
+        // isDashing = true  <-- ELIMINADO, ya no bloquea PlayerMovement
+
+        for (int i = 0; i < tornadoHits; i++)
+        {
+            DrawDebugCircle(transform.position, tornadoRadius, Color.yellow);
+
+            Collider[] hits = Physics.OverlapSphere(transform.position, tornadoRadius, targeting.enemyLayer);
+            foreach (Collider col in hits)
+            {
+                Damageable dmg = col.GetComponent<Damageable>();
+                if (dmg != null)
+                    dmg.TakeDamage(tornadoDamage, transform.position, "Player", AttackType.Tornado);
+            }
+
+            yield return new WaitForSeconds(tornadoInterval);
+        }
+
+        isTornado = false;
+
+        if (movement != null)
+            movement.moveForce = originalSpeed;
+
+        if (receiver != null)
+        {
+            receiver.isUntouchable = false;
+            receiver.damageReductionMultiplier = 1f;
+        }
+    }
+
+    private void DrawDebugCircle(Vector3 center, float radius, Color color)
+    {
+        int segments = 20;
+        float angleStep = 360f / segments;
+        Vector3 prevPoint = center + new Vector3(radius, 0, 0);
+
+        for (int i = 1; i <= segments; i++)
+        {
+            float angle = i * angleStep * Mathf.Deg2Rad;
+            Vector3 point = center + new Vector3(Mathf.Cos(angle) * radius, 0, Mathf.Sin(angle) * radius);
+            Debug.DrawLine(prevPoint, point, color, tornadoInterval);
+            prevPoint = point;
+        }
+    }
+
+    public void CancelAreaAttack()
+    {
+        Debug.Log($"CancelAreaAttack llamado — isDashing:{isDashing} isCharging:{isCharging}");
+        if (isDashing || isCharging)
+        {
+            StopAllCoroutines();
+            rb.linearVelocity = Vector3.zero;
+            isDashing = false;
+            isCharging = false;
+            attackCancelled = true; // marcar cancelación externa
+            canDirectedAttack = true;
+            animator.SetBool("areaChargeHold", false);
+            animator.ResetTrigger("areaChargeStart");
+            animator.SetTrigger("areaFailedStart"); // forzar salida de Area_Start
+            swordHitbox.gameObject.SetActive(false);
+
+            int playerLayer = gameObject.layer;
+            int enemyLayer = LayerMask.NameToLayer("Enemy");
+            Physics.IgnoreLayerCollision(playerLayer, enemyLayer, false);
+            Debug.Log("Cancelación ejecutada");
+        }
     }
 
     // ---------------- Bloqueo exitoso ----------------
@@ -228,6 +512,14 @@ public class PlayerCombat : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, rot, blockRotateSpeed * Time.deltaTime);
         }
         animator.SetTrigger("blockHit");
+    }
+    private void CancelBlock()
+    {
+        if (blockBox.activeSelf)
+        {
+            animator.SetBool("blockHold", false);
+            blockBox.SetActive(false);
+        }
     }
 
     // ---------------- Input de Modo Furia ----------------

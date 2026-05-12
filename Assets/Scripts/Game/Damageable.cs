@@ -15,10 +15,14 @@ public class Damageable : MonoBehaviour
 
     // Evento para notificar muerte
     public event Action OnDeath;
+    public event Action<Vector3, string> OnHit;
 
     private Renderer rend;
     private Material matInstance;
     private Color originalColor;
+
+    public bool isBlocking = false;
+    public enum AttackType { Normal, Tornado, Projectile }
 
     private void Start()
     {
@@ -31,15 +35,16 @@ public class Damageable : MonoBehaviour
         }
     }
 
-    public void TakeDamage(float damage, Vector3 attackerPosition)
+    public void TakeDamage(float damage, Vector3 attackerPosition, string attackerTag = "", AttackType attackType = AttackType.Normal)
     {
+        OnHit?.Invoke(attackerPosition, attackerTag); // siempre notificar
+
+        if (isBlocking && attackType != AttackType.Tornado) return; // bloquear daño pero hit ya registrado
+
         currentHealth -= damage;
-
-        GetComponent<EnemyController>()?.ApplyKnockback(attackerPosition);
-
+        GetComponent<EnemyController>()?.ApplyKnockback(attackerPosition, attackType);
         if (rend != null)
             StartCoroutine(FlashDamage());
-
         if (currentHealth <= 0)
             Die();
     }
@@ -63,12 +68,14 @@ public class Damageable : MonoBehaviour
     private void Die()
     {
         Debug.Log($"{gameObject.name} ha muerto.");
-
-        // Lanza evento para que EnemyController o quien escuche actúe
         OnDeath?.Invoke();
+        StartCoroutine(DestroyAfterDelay());
+    }
 
-        // Si quieres destruir inmediatamente:
-        // Destroy(gameObject);
+    private IEnumerator DestroyAfterDelay()
+    {
+        yield return new WaitForSeconds(0f); // tiempo para que se vea la muerte
+        Destroy(gameObject);
     }
 
 }

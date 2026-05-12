@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Linq;
+using System.Collections.Generic;
 
 public class TargetingSystem : MonoBehaviour
 {
@@ -60,5 +61,37 @@ public class TargetingSystem : MonoBehaviour
             Gizmos.DrawLine(prevPoint, point);
             prevPoint = point;
         }
+    }
+
+    public List<Transform> GetEnemiesInRange(int maxCount, float range)
+    {
+        Collider[] hits = Physics.OverlapSphere(transform.position, range, enemyLayer);
+        return hits
+            .OrderBy(h => Vector3.Distance(transform.position, h.transform.position))
+            .Take(maxCount)
+            .Select(h => h.transform)
+            .ToList();
+    }
+
+    public Transform GetNearestEnemyInDirection(Vector3 direction)
+    {
+        if (direction.sqrMagnitude < 0.01f)
+            direction = transform.forward; // fallback si no hay input
+
+        Collider[] hits = Physics.OverlapSphere(transform.position, targetingRange, enemyLayer);
+        if (hits.Length == 0) return null;
+
+        var enemiesInCone = hits.Where(h =>
+        {
+            Vector3 dirToEnemy = (h.transform.position - transform.position).normalized;
+            float angle = Vector3.Angle(direction.normalized, dirToEnemy);
+            return angle <= coneAngle / 2f;
+        });
+
+        if (!enemiesInCone.Any()) return null;
+
+        return enemiesInCone
+            .OrderBy(h => Vector3.Distance(transform.position, h.transform.position))
+            .First().transform;
     }
 }

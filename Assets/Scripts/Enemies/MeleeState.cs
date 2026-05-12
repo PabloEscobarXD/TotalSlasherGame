@@ -12,7 +12,7 @@ public class MeleeState : EnemyState
     public override void Enter()
     {
         // Aquí puedes poner animación de caminar/atacar
-        EnemyManager.Instance?.RegisterMeleeEnemy(enemy);
+        EnemyManager.Instance?.RegisterMeleeEnemy(enemy); // faltaba esto
         Debug.Log("Conehead: Modo Melee");
     }
 
@@ -20,24 +20,31 @@ public class MeleeState : EnemyState
     {
         if (enemy == null) { Debug.LogError("enemy es null"); return; }
         if (EnemyManager.Instance == null) { Debug.LogError("EnemyManager.Instance es null"); return; }
-        // Si muere, cambiamos a Dead
+
         if (enemy.IsDead())
         {
             enemy.fsm.ChangeState(new DeadState(enemy));
             return;
         }
 
-        // Movimiento hacia el jugador
         enemy.MoveTowardsPlayer();
+
+        // Si prefiere ranged y pasaron X segundos sin recibir daño ? re-evaluar
+        if (enemy.prefersRanged && enemy.GetTimeSinceLastHit() > 5f)
+        {
+            Debug.Log("Ranged sin daño reciente ? EvaluateState");
+            enemy.fsm.ChangeState(new EvaluateState(enemy));
+            return;
+        }
 
         waveRequestTimer += Time.deltaTime;
         if (waveRequestTimer >= waveRequestInterval)
         {
-            EnemyManager.Instance?.RequestAttackWave();
+            if (enemy.IsPlayerInAttackRange())
+                EnemyManager.Instance?.RequestAttackWave();
             waveRequestTimer = 0f;
         }
 
-        // Si el jugador está lejos
         if (!enemy.IsPlayerClose())
         {
             enemy.fsm.ChangeState(new EvaluateState(enemy));

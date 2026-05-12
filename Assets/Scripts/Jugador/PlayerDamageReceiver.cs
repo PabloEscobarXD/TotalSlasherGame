@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerDamageReceiver : MonoBehaviour
@@ -12,11 +14,18 @@ public class PlayerDamageReceiver : MonoBehaviour
     public float knockbackForce = 10f;       // fuerza del empujón
     public float damage = 10f;               // daño de prueba (HurtCube)
 
+    [Header("Reducción de daño")]
+    [Range(0f, 1f)]
+    public float damageReductionMultiplier = 1f;
+
     private bool isStunned = false;
 
     private Rigidbody rb;
     private PlayerCombat combat;
     private PlayerMovement movement;
+    public bool isUntouchable = false; // durante tornado
+
+    public UIShake uiShake;
 
     void Start()
     {
@@ -32,20 +41,21 @@ public class PlayerDamageReceiver : MonoBehaviour
     // -------------------------------------------
     public void TakeDamage(Vector3 hitSourcePosition)
     {
-        // Verificar si está bloqueando
         if (combat != null && combat.blockBox.activeSelf)
         {
-            // El bloqueo absorbe el golpe → NO recibir daño
             combat.OnBlockSuccess(hitSourcePosition);
             return;
         }
-
-        // Daño normal
         if (isStunned) return;
 
         ApplyHealthReduction(damage);
-        ApplyKnockback(hitSourcePosition);
-        StartCoroutine(ApplyStun());
+        uiShake?.TriggerShake();
+
+        if (!isUntouchable)
+        {
+            ApplyKnockback(hitSourcePosition);
+            StartCoroutine(ApplyStun());
+        }
     }
 
 
@@ -54,7 +64,7 @@ public class PlayerDamageReceiver : MonoBehaviour
     // -------------------------------------------
     void ApplyHealthReduction(float amount)
     {
-        currentHP -= amount;
+        currentHP -= amount * damageReductionMultiplier;
 
         Debug.Log("[PLAYER] Recibió daño. HP actual = " + currentHP);
 
@@ -70,9 +80,14 @@ public class PlayerDamageReceiver : MonoBehaviour
     {
         Vector3 direction = (transform.position - source).normalized;
         direction.y = 0;
-
         rb.linearVelocity = Vector3.zero;
         rb.AddForce(direction * knockbackForce, ForceMode.Impulse);
+
+        // No rotar si está bloqueando
+        if (combat != null && combat.blockBox.activeSelf) return;
+
+        if (direction.sqrMagnitude > 0.01f)
+            rb.MoveRotation(Quaternion.LookRotation(direction));
     }
 
     // -------------------------------------------
@@ -95,6 +110,7 @@ public class PlayerDamageReceiver : MonoBehaviour
     void Die()
     {
         Debug.Log("PLAYER MUERTO");
+        SceneManager.LoadScene("Nivel1");
         // Aquí puedes agregar animación death, respawn, etc.
     }
 }

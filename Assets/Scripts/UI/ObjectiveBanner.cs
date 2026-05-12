@@ -37,27 +37,24 @@ public class ObjectiveBanner : MonoBehaviour
     private IEnumerator PlayBannerAnimation()
     {
         yield return new WaitForSeconds(fastExitDelay);
-        // ——— 1. POSICIÓN INICIAL (Fuera de la izquierda)
-        Vector2 startPos = new Vector2(-canvasWidth - 300f, banner.anchoredPosition.y);
-        Vector2 endCenter = new Vector2(0, banner.anchoredPosition.y);
-        Vector2 exitPos = new Vector2(canvasWidth + 300f, banner.anchoredPosition.y);
 
+        float bannerWidth = banner.rect.width;
+        float centerX = -bannerWidth / 2f + 500f;
+        float exitX = canvasWidth / 2f + bannerWidth;
+
+        Vector2 startPos = new Vector2(-canvasWidth / 2f - bannerWidth, banner.anchoredPosition.y);
         banner.anchoredPosition = startPos;
 
-        // ——— 2. ENTRADA RÁPIDA
-        float timer = 0f;
-        while (timer < slowDownDelay)
+        // ——— ENTRADA RÁPIDA hasta llegar al centro
+        while (banner.anchoredPosition.x < centerX)
         {
-            banner.anchoredPosition = Vector2.Lerp(startPos, endCenter, timer / slowDownDelay);
-            timer += Time.deltaTime * (fastSpeed / 500f);
+            banner.anchoredPosition += Vector2.right * fastSpeed * Time.deltaTime;
             yield return null;
         }
+        banner.anchoredPosition = new Vector2(centerX, banner.anchoredPosition.y);
 
-        // Asegurar que quedó cerca del centro
-        banner.anchoredPosition = endCenter;
-
-        // ——— 3. MOVIMIENTO LENTO (lectura)
-        timer = 0f;
+        // ——— MOVIMIENTO LENTO por duración fija (esto sí tiene sentido que sea tiempo)
+        float timer = 0f;
         while (timer < slowDuration)
         {
             banner.anchoredPosition += Vector2.right * slowSpeed * Time.deltaTime;
@@ -65,14 +62,13 @@ public class ObjectiveBanner : MonoBehaviour
             yield return null;
         }
 
-        // ——— 5. SALIDA RÁPIDA
-        while (banner.anchoredPosition.x < exitPos.x)
+        // ——— SALIDA RÁPIDA hasta salir de pantalla
+        while (banner.anchoredPosition.x < exitX)
         {
             banner.anchoredPosition += Vector2.right * fastSpeed * Time.deltaTime;
             yield return null;
         }
 
-        // Al terminar puedes destruirlo o desactivarlo
         gameObject.SetActive(false);
     }
 }
