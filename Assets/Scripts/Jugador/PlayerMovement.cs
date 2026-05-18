@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,15 +6,12 @@ public class PlayerMovement : MonoBehaviour
 {
     public float moveForce = 10f;
     public float jumpForce = 250f;
-
     private Vector2 moveInput;
     private Rigidbody rb;
     private PlayerInput playerInput;
-
     public PlayerCombat playerCombatIntance;
-
+    public Animator animator;
     public Vector3 WorldMoveDirection { get; private set; }
-
 
     void Start()
     {
@@ -26,18 +22,18 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         moveInput = playerInput.actions["Move"].ReadValue<Vector2>();
+        bool isBlocking = playerCombatIntance.blockBox.activeSelf;
+        animator.SetBool("isPlayerMoving", moveInput.sqrMagnitude > 0.01f && !isBlocking);
     }
 
     void FixedUpdate()
     {
         Vector3 camForward = Camera.main.transform.forward; camForward.y = 0; camForward.Normalize();
         Vector3 camRight = Camera.main.transform.right; camRight.y = 0; camRight.Normalize();
-
-        // WorldMoveDirection se actualiza SIEMPRE, sin importar el estado
         WorldMoveDirection = (camForward * moveInput.y + camRight * moveInput.x).normalized;
 
-        // El movimiento físico sí respeta las condiciones
-        if (!playerCombatIntance.isCharging && !playerCombatIntance.isDashing || playerCombatIntance.isTornado)
+        bool canMove = !playerCombatIntance.isCharging || playerCombatIntance.isTornado;
+        if (canMove)
         {
             Vector3 velocity = rb.linearVelocity;
             Vector3 move = WorldMoveDirection * moveForce;
@@ -56,17 +52,14 @@ public class PlayerMovement : MonoBehaviour
         if (context.performed)
             rb.AddForce(Vector3.up * jumpForce);
     }
+
     public void Pause(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
             PauseManager menu = FindAnyObjectByType<PauseManager>();
-
             if (menu != null)
-            {
                 menu.TogglePause();
-            }
         }
     }
-
 }

@@ -75,11 +75,10 @@ public class PlayerCombat : MonoBehaviour
     private bool attackCancelled = false;
     private CameraFollow cameraFollow;
 
-    [Header("Buffer de Input")]
-    public float inputBufferTime = 0.3f;
-    private bool attackBuffered = false;
-    private float attackBufferTimer = 0f;
     private PlayerMovement movement;
+
+    private PlayerInput playerInput;
+
 
     void Start()
     {
@@ -90,6 +89,13 @@ public class PlayerCombat : MonoBehaviour
         comboText.text = comboCount.ToString();
         comboGroup.SetActive(false);
         movement = GetComponent<PlayerMovement>();
+
+        isDashing = false;
+        isCharging = false;
+        isTornado = false;
+        isFuryDashing = false;
+
+        playerInput = GetComponent<PlayerInput>();
     }
 
     void Update()
@@ -106,27 +112,11 @@ public class PlayerCombat : MonoBehaviour
             }
         }
 
-        // Buffer de ataque
-        if (attackBuffered)
-        {
-            attackBufferTimer -= Time.deltaTime;
-            if (attackBufferTimer <= 0f)
-            {
-                attackBuffered = false;
-                return;
-            }
-            if (!isDashing && canDirectedAttack)
-            {
-                attackBuffered = false;
-                ExecuteAttack();
-            }
-        }
-
         if (isComboActive)
         {
             comboGroup.SetActive(true);
             comboTimer += Time.deltaTime;
-            if(comboTimer >= comboTimeLimit)
+            if (comboTimer >= comboTimeLimit)
             {
                 ScoreManager.Instance?.RegisterCombo(comboCount);
                 comboCount = 0;
@@ -144,7 +134,6 @@ public class PlayerCombat : MonoBehaviour
         {
             // Solo los ataques de furia son incancelables
             if (isTornado || isFuryDashing) return;
-            if (isDashing && fury.IsFuryReady()) return; // está en FuryLineDash
 
             // Cancelar todo lo demás
             if (isDashing || isCharging)
@@ -152,10 +141,10 @@ public class PlayerCombat : MonoBehaviour
 
             // Detener cualquier corrutina restante y limpiar estado
             StopAllCoroutines();
+            playerInput.actions["Move"].Enable();
             rb.linearVelocity = Vector3.zero;
             isDashing = false;
             isCharging = false;
-            attackBuffered = false;
             canDirectedAttack = true;
             swordHitbox.gameObject.SetActive(false);
 
@@ -188,20 +177,17 @@ public class PlayerCombat : MonoBehaviour
     {
         if (ctx.performed)
         {
+            if (isFuryDashing || isTornado) return;
             CancelBlock();
             if (!isDashing && canDirectedAttack)
                 ExecuteAttack();
-            else
-            {
-                // Guardar en buffer
-                attackBuffered = true;
-                attackBufferTimer = inputBufferTime;
-            }
+            // sin buffer — si está ocupado, el input se ignora
         }
     }
 
     private void ExecuteAttack()
     {
+        playerInput.actions["Move"].Disable();
         StartCoroutine(DirectedAttackCooldown());
         bool furyAttack = fury.IsFuryReady();
 
@@ -211,20 +197,28 @@ public class PlayerCombat : MonoBehaviour
             fury.ConsumeFuryPartial(0.5f);
         }
 
-        // Usar dirección del stick para el targeting
         Vector3 attackDir = movement != null ? movement.WorldMoveDirection : transform.forward;
         currentTarget = targeting.GetNearestEnemyInDirection(attackDir);
 
-        // Rotar hacia la dirección del stick si hay input
         if (attackDir.sqrMagnitude > 0.01f)
             rb.MoveRotation(Quaternion.LookRotation(attackDir));
 
         if (furyAttack)
+        {
+            isDashing = true; // <-- agregar antes de la corrutina
             StartCoroutine(DashTowardsTarget(furyAttack));
+        }
         else if (currentTarget != null)
+        {
+            isDashing = true; // <-- agregar antes de la corrutina
             StartCoroutine(DashTowardsTarget(furyAttack));
+        }
         else
-            animator.SetTrigger("attackDash"); // dash en el lugar si no hay enemigos
+        {
+            animator.SetTrigger("attackDash");
+            playerInput.actions["Move"].Enable();
+        }
+            
     }
 
     private IEnumerator DashTowardsTarget(bool furyAttack)
@@ -232,11 +226,11 @@ public class PlayerCombat : MonoBehaviour
         if (furyAttack)
         {
             yield return StartCoroutine(FuryLineDash());
+            playerInput.actions["Move"].Enable();
             yield break;
         }
 
         // Dash normal (código existente)
-        isDashing = true;
         animator.SetTrigger("attackDash");
         float elapsed = 0f;
 
@@ -255,6 +249,7 @@ public class PlayerCombat : MonoBehaviour
 
         rb.linearVelocity = Vector3.zero;
         isDashing = false;
+        playerInput.actions["Move"].Enable();
 
         if (currentTarget != null)
         {
@@ -313,13 +308,13 @@ public class PlayerCombat : MonoBehaviour
         rb.linearVelocity = Vector3.zero;
         Physics.IgnoreLayerCollision(playerLayer, enemyLayer, false);
         isDashing = false;
-        isFuryDashing = true;
+        isFuryDashing = false;
     }
 
     // ---------------- Ataque en Área ----------------
     public void AreaAttack(InputAction.CallbackContext ctx)
     {
-        if (ctx.started && !isDashing && !isTornado)
+        if (ctx.started && !isDashing && !isTornado && !isCharging)
         {
             CancelBlock();
             bool furyAttack = fury.IsFuryReady();
@@ -483,6 +478,7 @@ public class PlayerCombat : MonoBehaviour
         if (isDashing || isCharging)
         {
             StopAllCoroutines();
+            playerInput.actions["Move"].Enable();
             rb.linearVelocity = Vector3.zero;
             isDashing = false;
             isCharging = false;
