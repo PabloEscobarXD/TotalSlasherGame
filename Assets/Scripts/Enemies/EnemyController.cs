@@ -45,22 +45,22 @@ public class EnemyController : MonoBehaviour
     private float timeSinceLastBlockedHit = 0f;
     private Coroutine blockCoroutine;
 
-    private float timeSinceLastHit = Mathf.Infinity;
+    [Header("Animación")]
+    public Animator animator;
 
-    private Renderer rend;
-    private Color originalColor;
+    private float timeSinceLastHit = Mathf.Infinity;
 
     void Start()
     {
-        rend = GetComponent<Renderer>();
-        if (rend != null) originalColor = rend.material.color;
+        if (animator == null)
+            animator = GetComponentInChildren<Animator>();
 
         rb = GetComponent<Rigidbody>();
         health = GetComponent<Damageable>();
 
         health.OnDeath += () =>
         {
-            ResetMaterialColor();
+            SetAnimBlock(false);
             health.isBlocking = false;
             isBlocking = false;
             if (fsm != null)
@@ -70,24 +70,24 @@ public class EnemyController : MonoBehaviour
         health.OnHit += (attackerPos, attackerTag) =>
         {
             timeSinceLastHit = 0f;
-            Debug.Log($"OnHit recibido — tag: {attackerTag}, estado: {fsm?.CurrentState?.GetType().Name}");
 
             if (attackerTag == "Player")
             {
                 if (isBlocking)
                 {
-                    // Recibir golpe bloqueando
+                    SetAnimBlockSuccess();
                     timeSinceLastBlockedHit = 0f;
                     blockedHitCounter++;
                     if (blockedHitCounter >= hitsToCounterAttack)
                     {
                         blockedHitCounter = 0;
-                        ExecuteAttack(); // contraataque
+                        ExecuteAttack();
                     }
                     return;
                 }
 
-                // No está bloqueando
+                SetAnimHit(); // reacción al daño
+
                 hitCounter++;
                 if (hitCounter >= hitsToBlock)
                 {
@@ -187,14 +187,9 @@ public class EnemyController : MonoBehaviour
     }
     private IEnumerator AttackCoroutine()
     {
-        Renderer rend = GetComponent<Renderer>();
-        Color original = rend != null ? rend.material.color : Color.white;
+        SetAnimAttack();
+        yield return new WaitForSeconds(0.4f); // windup
 
-        // 1. Ponerse rojo (telegrafiar el ataque)
-        if (rend != null) rend.material.color = Color.red;
-        yield return new WaitForSeconds(0.4f); // tiempo de "aviso"
-
-        // 2. Avanzar rápido hacia el jugador
         float dashDuration = 0.2f;
         float elapsed = 0f;
         while (elapsed < dashDuration)
@@ -203,26 +198,23 @@ public class EnemyController : MonoBehaviour
             {
                 Vector3 dir = (player.position - transform.position).normalized;
                 dir.y = 0;
-                rb.MovePosition(transform.position + dir * (moveSpeed * 2.5f) * Time.deltaTime);
+                rb.linearVelocity = new Vector3(dir.x * moveSpeed * 2.5f, rb.linearVelocity.y, dir.z * moveSpeed * 2.5f);
             }
             elapsed += Time.deltaTime;
             yield return null;
         }
 
-        // 3. Intentar hacer daño (verificar distancia)
+        rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
+
         if (player != null)
         {
             float distToPlayer = Vector3.Distance(transform.position, player.position);
-            if (distToPlayer <= stopDistance + 1.2f) // rango de golpe generoso para debug
+            if (distToPlayer <= stopDistance + 1.2f)
             {
                 PlayerDamageReceiver receiver = player.GetComponent<PlayerDamageReceiver>();
                 receiver?.TakeDamage(transform.position);
             }
         }
-
-        // 4. Volver al color original
-        yield return new WaitForSeconds(0.2f);
-        ResetMaterialColor();
     }
 
     public void ApplyKnockback(Vector3 attackerPosition, Damageable.AttackType attackType = Damageable.AttackType.Normal)
@@ -277,31 +269,76 @@ public class EnemyController : MonoBehaviour
         blockedHitCounter = 0;
         timeSinceLastBlockedHit = 0f;
 
-        Renderer rend = GetComponent<Renderer>();
-        Color original = rend != null ? rend.material.color : Color.white;
-        if (rend != null)
-        {
-            ColorUtility.TryParseHtmlString("#1a1a1a", out Color blockColor);
-            rend.material.color = blockColor;
-        }
+        SetAnimBlock(true);
 
-        // Mantener bloqueo hasta que pasen blockIdleTimeout segundos sin recibir daño
         while (timeSinceLastBlockedHit < blockIdleTimeout)
         {
             timeSinceLastBlockedHit += Time.deltaTime;
             yield return null;
         }
 
-        if (rend != null) rend.material.color = original;
+        SetAnimBlock(false);
         health.isBlocking = false;
         isBlocking = false;
         blockCoroutine = null;
-
-        ResetMaterialColor();
     }
-    private void ResetMaterialColor()
+
+    // ================================
+    //      MÉTODOS DE ANIMACIÓN
+    // ================================
+
+    public void SetAnimIdle()
     {
-        if (rend != null) rend.material.color = originalColor;
+        animator?.SetTrigger("idle");
+    }
+
+    public void SetAnimRun()
+    {
+        animator?.SetBool("isRunning", true);
+        animator?.SetBool("isRetreat", false);
+        animator?.SetBool("isStandby", false);
+    }
+    public void SetAnimRetreat()
+    {
+        animator?.SetBool("isRunning", false);
+        animator?.SetBool("isRetreat", true);
+        animator?.SetBool("isStandby", false);
+    }
+
+    public void SetAnimAttack()
+    {
+        // Variación aleatoria entre 2 ataques
+        int variant = Random.Range(0, 2);
+        animator?.SetFloat("attackVariant", variant);
+        animator?.SetTrigger("attack");
+    }
+
+    public void SetAnimHit()
+    {
+        // Variación aleatoria entre 3 reacciones
+        int variant = Random.Range(0, 3);
+        animator?.SetInteger("hitVariant", variant);
+        animator?.SetTrigger("hit");
+    }
+
+    public void SetAnimBlock(bool holding)
+    {
+        animator?.SetBool("isBlocking", holding);
+    }
+
+    public void SetAnimBlockSuccess()
+    {
+        animator?.SetTrigger("blockSuccess");
+    }
+
+    public void SetAnimRangedPrepare()
+    {
+        animator?.SetTrigger("rangedPrepare");
+    }
+
+    public void SetAnimRangedShoot()
+    {
+        animator?.SetTrigger("rangedShoot");
     }
 
 }

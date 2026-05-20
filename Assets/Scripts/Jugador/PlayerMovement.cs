@@ -28,22 +28,49 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        Vector3 camForward = Camera.main.transform.forward; camForward.y = 0; camForward.Normalize();
-        Vector3 camRight = Camera.main.transform.right; camRight.y = 0; camRight.Normalize();
-        WorldMoveDirection = (camForward * moveInput.y + camRight * moveInput.x).normalized;
+        if (playerCombatIntance.isDashing &&
+            !playerCombatIntance.isTornado)
+            return;
 
-        bool canMove = !playerCombatIntance.isCharging || playerCombatIntance.isTornado;
+        Vector3 camForward = Camera.main.transform.forward;
+        camForward.y = 0;
+        camForward.Normalize();
+
+        Vector3 camRight = Camera.main.transform.right;
+        camRight.y = 0;
+        camRight.Normalize();
+
+        WorldMoveDirection =
+            (camForward * moveInput.y + camRight * moveInput.x).normalized;
+
+        bool canMove =
+            !playerCombatIntance.isCharging ||
+            playerCombatIntance.isTornado;
+
         if (canMove)
         {
             Vector3 velocity = rb.linearVelocity;
             Vector3 move = WorldMoveDirection * moveForce;
-            rb.linearVelocity = new Vector3(move.x, velocity.y, move.z);
+
+            rb.linearVelocity =
+                new Vector3(move.x, velocity.y, move.z);
 
             if (move.sqrMagnitude > 0.01f)
             {
-                Quaternion targetRotation = Quaternion.LookRotation(move, Vector3.up);
-                rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRotation, 0.15f));
+                Quaternion targetRotation =
+                    Quaternion.LookRotation(move, Vector3.up);
+
+                rb.MoveRotation(
+                    Quaternion.Slerp(
+                        rb.rotation,
+                        targetRotation,
+                        0.15f));
             }
+        }
+        else if (!playerCombatIntance.isTornado)
+        {
+            rb.linearVelocity =
+                new Vector3(0, rb.linearVelocity.y, 0);
         }
     }
 

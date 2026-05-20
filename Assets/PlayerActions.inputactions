@@ -257,7 +257,7 @@
                     "name": "",
                     "id": "6be7dc61-38a1-46ee-9d2d-a37f315cd0d2",
                     "path": "<Gamepad>/buttonEast",
-                    "interactions": "Hold(duration=0.11,pressPoint=0.1)",
+                    "interactions": "Hold(duration=0.11,pressPoint=0.01)",
                     "processors": "",
                     "groups": "",
                     "action": "AreaAttack",

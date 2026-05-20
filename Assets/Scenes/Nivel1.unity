@@ -2103,7 +2103,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bce62ee276237d419b2efda65f4ced1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyPrefab: {fileID: 5670664346430387621, guid: dbc9821f99fb25241a6695d7060b4cc5, type: 3}
+  enemyPrefab: {fileID: 9121481321417569872, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
   spawnAreaCenter: {fileID: 784582311}
   spawnAreaSize: {x: 50, y: 10}
   timeBetweenRounds: 3

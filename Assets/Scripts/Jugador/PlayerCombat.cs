@@ -79,6 +79,8 @@ public class PlayerCombat : MonoBehaviour
 
     private PlayerInput playerInput;
 
+    private Vector3 chargeDirection; // dirección acumulada durante la carga
+
 
     void Start()
     {
@@ -107,7 +109,8 @@ public class PlayerCombat : MonoBehaviour
             chargeTimer += Time.deltaTime;
             if (movement != null && movement.WorldMoveDirection.sqrMagnitude > 0.01f)
             {
-                Quaternion targetRot = Quaternion.LookRotation(movement.WorldMoveDirection);
+                chargeDirection = movement.WorldMoveDirection; // guardar última válida
+                Quaternion targetRot = Quaternion.LookRotation(chargeDirection);
                 rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRot, 0.2f));
             }
         }
@@ -330,6 +333,10 @@ public class PlayerCombat : MonoBehaviour
             isCharging = true;
             chargeTimer = 0f;
             animator.SetTrigger("areaChargeStart");
+            chargeDirection = movement != null && movement.WorldMoveDirection.sqrMagnitude > 0.01f
+                ? movement.WorldMoveDirection
+                : transform.forward;
+            
         }
         else if (ctx.performed && isCharging)
         {
@@ -346,15 +353,8 @@ public class PlayerCombat : MonoBehaviour
             float ratio = Mathf.Clamp01(chargeTimer / maxChargeTime);
             animator.SetTrigger("areaAttackSweep");
 
-            // Capturar dirección ANTES de iniciar la corrutina
-            Vector3 dashDir = (movement != null && movement.WorldMoveDirection.sqrMagnitude > 0.01f)
-                ? movement.WorldMoveDirection
-                : transform.forward;
-
-            // Rotar hacia esa dirección
-            rb.MoveRotation(Quaternion.LookRotation(dashDir));
-
-            StartCoroutine(ExecuteAreaAttack(ratio, false, dashDir));
+            rb.MoveRotation(Quaternion.LookRotation(chargeDirection));
+            StartCoroutine(ExecuteAreaAttack(ratio, false, chargeDirection));
         }
     }
     private IEnumerator ExecuteAreaAttack(float ratio, bool furyAttack, Vector3 dashDir = default)
