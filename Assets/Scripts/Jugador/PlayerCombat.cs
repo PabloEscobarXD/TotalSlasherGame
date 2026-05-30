@@ -221,7 +221,7 @@ public class PlayerCombat : MonoBehaviour
             animator.SetTrigger("attackDash");
             playerInput.actions["Move"].Enable();
         }
-            
+        AudioManager.GetOrCreate().PlaySFX("player_attack_single");
     }
 
     private IEnumerator DashTowardsTarget(bool furyAttack)
@@ -267,6 +267,7 @@ public class PlayerCombat : MonoBehaviour
             }
             fury.AddFury();
         }
+
     }
 
     private IEnumerator FuryLineDash()
@@ -336,11 +337,12 @@ public class PlayerCombat : MonoBehaviour
             chargeDirection = movement != null && movement.WorldMoveDirection.sqrMagnitude > 0.01f
                 ? movement.WorldMoveDirection
                 : transform.forward;
-            
+            animator.SetBool("areaChargeHold", true);
+            AudioManager.GetOrCreate().PlaySFX("area_charge");
         }
         else if (ctx.performed && isCharging)
         {
-            animator.SetBool("areaChargeHold", true);
+            
         }
         else if (ctx.canceled)
         {
@@ -353,6 +355,7 @@ public class PlayerCombat : MonoBehaviour
             float ratio = Mathf.Clamp01(chargeTimer / maxChargeTime);
             animator.SetTrigger("areaAttackSweep");
 
+            AudioManager.GetOrCreate().PlaySFX("area_release");
             rb.MoveRotation(Quaternion.LookRotation(chargeDirection));
             StartCoroutine(ExecuteAreaAttack(ratio, false, chargeDirection));
         }
@@ -508,6 +511,7 @@ public class PlayerCombat : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, rot, blockRotateSpeed * Time.deltaTime);
         }
         animator.SetTrigger("blockHit");
+        AudioManager.GetOrCreate().PlaySFX("block_success");
     }
     private void CancelBlock()
     {

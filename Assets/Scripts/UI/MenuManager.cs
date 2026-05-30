@@ -16,25 +16,30 @@ public class MenuManager : MonoBehaviour
     private bool playerCanMove;
     void Start()
     {
+        AudioManager.GetOrCreate().PlayMusic("music1");
         mainMenuCanvas.SetActive(true);
         optionsCanvas.SetActive(false);
 
         // Seleccionar el botón de Opciones (o Jugar, el que quieras al inicio)
         EventSystem.current.SetSelectedGameObject(null);
         EventSystem.current.SetSelectedGameObject(startGameButton);
+        AudioManager.GetOrCreate().PlaySFX("button_navigate");
     }
 
     public void startGame()
     {
+        AudioManager.GetOrCreate().PlaySFX("button_click");
         SceneManager.LoadScene("Nivel1");
     }
     public void backToMenu()
     {
+        AudioManager.GetOrCreate().PlaySFX("button_click");
         SceneManager.LoadScene("Menu");
     }
 
     public void toggleOptionsCanvas()
     {
+        AudioManager.GetOrCreate().PlaySFX("button_click");
         Scene currentScene = SceneManager.GetActiveScene();
         // Si está cerrado → Abrir
         if (!optionsCanvas.activeSelf)
@@ -60,6 +65,7 @@ public class MenuManager : MonoBehaviour
 
     public void closeGame()
     {
+        AudioManager.GetOrCreate().PlaySFX("button_click");
         Application.Quit();
     }
 

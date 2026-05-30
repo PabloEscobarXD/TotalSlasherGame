@@ -7571,7 +7571,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69667aaf5ddbff649bb53f2942ebb686, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxAttackers: 3
+  maxAttackers: 5
   minAttackInterval: 1
   maxAttackInterval: 3
   globalCooldown: 4

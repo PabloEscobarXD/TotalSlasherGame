@@ -56,6 +56,7 @@ public class PlayerDamageReceiver : MonoBehaviour
             ApplyKnockback(hitSourcePosition);
             StartCoroutine(ApplyStun());
         }
+        AudioManager.GetOrCreate().PlaySFX("player_hit");
     }
 
 

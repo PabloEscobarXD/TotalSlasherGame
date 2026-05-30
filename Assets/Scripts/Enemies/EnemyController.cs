@@ -188,7 +188,7 @@ public class EnemyController : MonoBehaviour
     private IEnumerator AttackCoroutine()
     {
         SetAnimAttack();
-        yield return new WaitForSeconds(0.4f); // windup
+        yield return new WaitForSeconds(0.5f); // windup
 
         float dashDuration = 0.2f;
         float elapsed = 0f;

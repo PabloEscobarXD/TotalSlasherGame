@@ -37,6 +37,7 @@ public class Damageable : MonoBehaviour
 
     public void TakeDamage(float damage, Vector3 attackerPosition, string attackerTag = "", AttackType attackType = AttackType.Normal)
     {
+        AudioManager.GetOrCreate().PlaySFX("enemy_hit");
         OnHit?.Invoke(attackerPosition, attackerTag); // siempre notificar
 
         if (isBlocking && attackType != AttackType.Tornado) return; // bloquear daño pero hit ya registrado
