@@ -37,11 +37,16 @@ public class Damageable : MonoBehaviour
 
     public void TakeDamage(float damage, Vector3 attackerPosition, string attackerTag = "", AttackType attackType = AttackType.Normal)
     {
-        AudioManager.GetOrCreate().PlaySFX("enemy_hit");
         OnHit?.Invoke(attackerPosition, attackerTag); // siempre notificar
 
-        if (isBlocking && attackType != AttackType.Tornado) return; // bloquear daño pero hit ya registrado
+        if (isBlocking && attackType != AttackType.Tornado)
+        {
+            AudioManager.GetOrCreate().PlaySFX("enemy_block");
+            return; // bloquear daño pero hit ya registrado
+        }
+        
 
+        AudioManager.GetOrCreate().PlaySFX("enemy_hit");
         currentHealth -= damage;
         GetComponent<EnemyController>()?.ApplyKnockback(attackerPosition, attackType);
         if (rend != null)
