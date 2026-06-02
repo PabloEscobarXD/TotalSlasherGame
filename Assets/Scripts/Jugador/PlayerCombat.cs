@@ -338,7 +338,7 @@ public class PlayerCombat : MonoBehaviour
                 ? movement.WorldMoveDirection
                 : transform.forward;
             animator.SetBool("areaChargeHold", true);
-            AudioManager.GetOrCreate().PlaySFX("area_charge");
+            AudioManager.GetOrCreate().PlaySFXCancellable("area_charge");
         }
         else if (ctx.performed && isCharging)
         {
@@ -346,7 +346,12 @@ public class PlayerCombat : MonoBehaviour
         }
         else if (ctx.canceled)
         {
-            if (attackCancelled) { attackCancelled = false; return; }
+            if (attackCancelled) 
+            {
+                AudioManager.GetOrCreate().StopSFXCancellable();
+                attackCancelled = false;
+                return;
+            }
             if (!isCharging) return;
 
             isCharging = false;
@@ -355,6 +360,7 @@ public class PlayerCombat : MonoBehaviour
             float ratio = Mathf.Clamp01(chargeTimer / maxChargeTime);
             animator.SetTrigger("areaAttackSweep");
 
+            AudioManager.GetOrCreate().StopSFXCancellable();
             AudioManager.GetOrCreate().PlaySFX("area_release");
             rb.MoveRotation(Quaternion.LookRotation(chargeDirection));
             StartCoroutine(ExecuteAreaAttack(ratio, false, chargeDirection));

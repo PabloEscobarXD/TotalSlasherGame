@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 public class RangedState : EnemyState
 {
     private EnemyController enemy;
@@ -8,7 +9,7 @@ public class RangedState : EnemyState
     private float disperseTimer = 0f;
     private float disperseDuration = 1.5f;
     private bool isPreparing = false;
-    private float prepareTime = 0.8f; // tiempo de animación de preparación antes de disparar
+    private float prepareTime = 0.5f; // tiempo de animación de preparación antes de disparar
 
     public RangedState(EnemyController enemy) : base(enemy)
     {
@@ -27,6 +28,18 @@ public class RangedState : EnemyState
     public override void Update()
     {
         if (enemy.IsDead()) { enemy.fsm.ChangeState(new DeadState(enemy)); return; }
+
+        // Mirar siempre al jugador
+        Vector3 dirToPlayer = (enemy.GetPlayer().position - enemy.transform.position);
+        dirToPlayer.y = 0;
+        if (dirToPlayer.sqrMagnitude > 0.01f)
+        {
+            enemy.transform.rotation = Quaternion.Slerp(
+                enemy.transform.rotation,
+                Quaternion.LookRotation(dirToPlayer.normalized),
+                0.1f
+            );
+        }
 
         // Dispersión inicial
         if (disperseTimer < disperseDuration)
@@ -51,6 +64,7 @@ public class RangedState : EnemyState
         if (!isPreparing && shootTimer >= shootInterval - prepareTime)
         {
             isPreparing = true;
+            AudioManager.GetOrCreate().PlaySFX("enemy_rangedAttack");
             enemy.SetAnimRangedPrepare();
         }
 

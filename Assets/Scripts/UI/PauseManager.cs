@@ -6,7 +6,6 @@ using UnityEngine.InputSystem;
 public class PauseManager : MonoBehaviour
 {
     public GameObject pauseCanvas;
-    public PlayerControllerBlocker playerBlocker;
 
     public GameObject firstPauseSelectable;
     public GameObject optionsButtonInMainMenu;
@@ -19,6 +18,7 @@ public class PauseManager : MonoBehaviour
     private void Start()
     {
         playerInput = FindAnyObjectByType<PlayerInput>();
+        playerInput.SwitchCurrentActionMap("Player");
     }
 
     public void TogglePause()
@@ -30,7 +30,6 @@ public class PauseManager : MonoBehaviour
             pauseCanvas.SetActive(false);
 
             // Se despausa
-            playerBlocker.SetPaused(false);
             Time.timeScale = 1f;
             isPaused = false;
 
@@ -43,7 +42,6 @@ public class PauseManager : MonoBehaviour
         isPaused = !isPaused;
 
         pauseCanvas.SetActive(isPaused);
-        playerBlocker.SetPaused(isPaused);
 
         if (isPaused)
         {
@@ -65,8 +63,6 @@ public class PauseManager : MonoBehaviour
 
     public void toggleOptionsCanvas()
     {
-        playerBlocker.SetPaused(true);
-
         // Si está cerrado → Abrir
         if (!optionsCanvas.activeSelf)
         {

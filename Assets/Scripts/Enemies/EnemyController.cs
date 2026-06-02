@@ -183,7 +183,7 @@ public class EnemyController : MonoBehaviour
 
     public void ExecuteAttack()
     {
-        AudioManager.GetOrCreate().PlaySFX("enemy_attack");
+        AudioManager.GetOrCreate().PlaySFX3D("enemy_attack", transform.position);
         StartCoroutine(AttackCoroutine());
     }
     private IEnumerator AttackCoroutine()

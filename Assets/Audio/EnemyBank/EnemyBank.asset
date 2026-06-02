@@ -15,13 +15,21 @@ MonoBehaviour:
   sounds:
   - id: enemy_hit
     clip: {fileID: 8300000, guid: ddc7938299894ab49b597fa47bdd6eea, type: 3}
-    volume: 0.35
+    volume: 0.6
     pitch: 1
+    minInterval: 0.1
   - id: enemy_block
     clip: {fileID: 8300000, guid: 955c1638eed0cbd4b9a6c08960051986, type: 3}
-    volume: 0.17
+    volume: 0.4
     pitch: 0.8
+    minInterval: 0.1
   - id: enemy_attack
     clip: {fileID: 8300000, guid: ac5ac89d0398c00418c10b78ddf41229, type: 3}
-    volume: 1
+    volume: 0.7
     pitch: 1
+    minInterval: 0.1
+  - id: enemy_rangedAttack
+    clip: {fileID: 8300000, guid: 61ec25c3651639f4293898adae770b27, type: 3}
+    volume: 0.7
+    pitch: 1
+    minInterval: 0.1

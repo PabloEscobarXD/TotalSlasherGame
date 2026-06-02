@@ -17,19 +17,24 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: 6bfdfaa6454782446baea39764b726c8, type: 3}
     volume: 0.6
     pitch: 1
+    minInterval: 0.1
   - id: block_success
     clip: {fileID: 8300000, guid: a2d7b785b751a5e4dbc2ca75a8f7e03c, type: 3}
-    volume: 0.3
+    volume: 0.4
     pitch: 1
+    minInterval: 0.1
   - id: player_hit
     clip: {fileID: 8300000, guid: 45cb3ebfb89efe44db09a857fad6dca9, type: 3}
     volume: 0.6
     pitch: 1
+    minInterval: 0.1
   - id: area_charge
     clip: {fileID: 8300000, guid: 52465b1c7ef6cf149bf0dc4039ae0fa7, type: 3}
-    volume: 0.2
+    volume: 0.17
     pitch: 1
+    minInterval: 0.1
   - id: area_release
     clip: {fileID: 8300000, guid: cc793fbeffb49ad489f1627cf7ae842d, type: 3}
-    volume: 1
+    volume: 0.9
     pitch: 1
+    minInterval: 0.1

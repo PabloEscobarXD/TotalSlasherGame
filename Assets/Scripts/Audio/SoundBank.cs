@@ -10,6 +10,7 @@ public class SoundBank : ScriptableObject
         public AudioClip clip;
         [Range(0f, 1f)] public float volume = 1f;
         [Range(0.5f, 2f)] public float pitch = 1f;
+        [Min(0f)] public float minInterval = 0.1f;
     }
 
     public SoundEntry[] sounds;

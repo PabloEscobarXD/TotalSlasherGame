@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using Unity.VisualScripting;
+using UnityEngine.UIElements;
 
 public class AudioManager : MonoBehaviour
 {
@@ -9,18 +11,15 @@ public class AudioManager : MonoBehaviour
     [Header("Sources")]
     public AudioSource musicSource;
     public AudioSource sfxSource;
-
+    public AudioSource sfxCancellableSource;
     [Header("Sound Banks")]
     public SoundBank[] banks;
 
     [Range(0f, 1f)] public float musicVolume = 1f;
     [Range(0f, 1f)] public float sfxVolume = 1f;
 
-    [Header("Referencias")]
-    public Slider musicSlider;
-    public Slider sfxSlider;
-
     private Dictionary<string, SoundBank.SoundEntry> cache;
+    private Dictionary<string, float> sfxCooldowns = new Dictionary<string, float>();
 
     void Awake()
     {
@@ -35,6 +34,9 @@ public class AudioManager : MonoBehaviour
         }
         if (sfxSource == null)
             sfxSource = gameObject.AddComponent<AudioSource>();
+
+        if (sfxCancellableSource == null)
+            sfxCancellableSource = gameObject.AddComponent<AudioSource>();
 
         BuildCache();
 
@@ -84,6 +86,7 @@ public class AudioManager : MonoBehaviour
     public void PlaySFX(string id)
     {
         if (!cache.TryGetValue(id, out var entry)) return;
+        if (!CanPlaySFX(id, entry.minInterval)) return;
         sfxSource.pitch = entry.pitch;
         sfxSource.PlayOneShot(entry.clip, sfxVolume * entry.volume);
     }
@@ -93,7 +96,22 @@ public class AudioManager : MonoBehaviour
     public void SetMusicVolume(float value)
     {
         musicVolume = value;
-        musicSource.volume = value;
+        // Respetar el volumen individual del clip actual
+        if (musicSource.clip != null && cache != null)
+        {
+            foreach (var entry in cache.Values)
+            {
+                if (entry.clip == musicSource.clip)
+                {
+                    musicSource.volume = musicVolume * entry.volume;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            musicSource.volume = value;
+        }
         PlayerPrefs.SetFloat("MusicVolume", value);
     }
 
@@ -101,6 +119,48 @@ public class AudioManager : MonoBehaviour
     {
         sfxVolume = value;
         PlayerPrefs.SetFloat("SFXVolume", value);
+    }
+
+    private bool CanPlaySFX(string id, float minInterval)
+    {
+        float now = Time.unscaledTime;
+        if (sfxCooldowns.TryGetValue(id, out float lastTime))
+            if (now - lastTime < minInterval) return false;
+        sfxCooldowns[id] = now;
+        return true;
+    }
+    public void PlaySFX3D(string id, Vector3 position)
+    {
+        if (!cache.TryGetValue(id, out var entry)) return;
+        if (!CanPlaySFX(id, entry.minInterval)) return;
+
+        GameObject tempGO = new GameObject($"SFX3D_{id}");
+        tempGO.transform.position = position;
+        AudioSource source = tempGO.AddComponent<AudioSource>();
+        source.clip = entry.clip;
+        source.volume = sfxVolume * entry.volume;
+        source.pitch = entry.pitch;
+        source.spatialBlend = 1f;
+        source.rolloffMode = AudioRolloffMode.Linear;
+        source.maxDistance = 30f;
+        source.Play();
+        Destroy(tempGO, entry.clip.length / entry.pitch);
+    }
+
+    // Reproducir un sonido cancelable (usa Play en vez de PlayOneShot)
+    public void PlaySFXCancellable(string id)
+    {
+        if (!cache.TryGetValue(id, out var entry)) return;
+        sfxCancellableSource.clip = entry.clip;
+        sfxCancellableSource.pitch = entry.pitch;
+        sfxCancellableSource.volume = sfxVolume * entry.volume;
+        sfxCancellableSource.Play();
+    }
+
+    // Cancelar el sonido cancelable actual
+    public void StopSFXCancellable()
+    {
+        sfxCancellableSource.Stop();
     }
 
     // -------------------- Lazy creation --------------------
