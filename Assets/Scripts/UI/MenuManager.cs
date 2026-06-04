@@ -23,7 +23,6 @@ public class MenuManager : MonoBehaviour
         // Seleccionar el botón de Opciones (o Jugar, el que quieras al inicio)
         EventSystem.current.SetSelectedGameObject(null);
         EventSystem.current.SetSelectedGameObject(startGameButton);
-        AudioManager.GetOrCreate().PlaySFX("button_navigate");
     }
 
     public void startGame()

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using System;
 
 public class RoundManager : MonoBehaviour
 {
@@ -11,26 +12,30 @@ public class RoundManager : MonoBehaviour
     [Header("Prefabs")]
     public GameObject enemyPrefab;
 
-    [Header("Área de spawn")]
-    public Transform spawnAreaCenter;
-    public Vector2 spawnAreaSize = new Vector2(20f, 20f); // ancho x largo
-
     [Header("Configuración de rondas")]
     public float timeBetweenRounds = 3f;
+
+    [System.Serializable]
+    public struct RoundConfig
+    {
+        public int meleeCount;
+        public int rangedCount;
+    }
+
+    public RoundConfig[] rounds = new RoundConfig[]
+    {
+        new RoundConfig { meleeCount = 8,  rangedCount = 2 },  // Ronda 1
+        new RoundConfig { meleeCount = 11, rangedCount = 3 },  // Ronda 2
+        new RoundConfig { meleeCount = 11, rangedCount = 4 },  // Ronda 3
+    };
+
+    [Header("Oleadas")]
+    public GameObject[] waveContainers;
 
     private int currentRound = 0;
     private List<GameObject> activeEnemies = new List<GameObject>();
 
     private bool waitingForNextRound = false;
-
-
-    // Configuración por ronda: (totalEnemigos, maxRanged)
-    private (int total, int ranged)[] roundConfig = new (int, int)[]
-    {
-        (10,  2),  // Ronda 1
-        (14,  3),  // Ronda 2
-        (15, 4),  // Ronda 3
-    };
 
     private void Awake()
     {
@@ -73,7 +78,7 @@ public class RoundManager : MonoBehaviour
 
     public void StartRound(int round)
     {
-        if (round < 1 || round > roundConfig.Length) return;
+        if (round < 1 || round > rounds.Length) return;
         StopAllCoroutines();
         ClearEnemies();
         currentRound = round;
@@ -86,7 +91,7 @@ public class RoundManager : MonoBehaviour
 
         int nextIndex = currentRound; // currentRound es 1-based, así que currentRound == nextIndex en 0-based
 
-        if (nextIndex >= roundConfig.Length)
+        if (nextIndex >= rounds.Length)
         {
             TriggerVictory();
             yield break;
@@ -101,37 +106,37 @@ public class RoundManager : MonoBehaviour
 
     private void SpawnRound(int index)
     {
-        var config = roundConfig[index];
-        EnemyManager.Instance?.SetMaxRanged(config.ranged);
+        if (index >= waveContainers.Length || waveContainers[index] == null) return;
+
+        waveContainers[index].SetActive(true);
+
+        EnemyController[] enemies = waveContainers[index].GetComponentsInChildren<EnemyController>(true);
+        int rangedCount = 0;
+
         activeEnemies.Clear();
 
-        for (int i = 0; i < config.total; i++)
+        foreach (EnemyController controller in enemies)
         {
-            Vector3 spawnPos = GetRandomSpawnPosition();
-            GameObject enemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
-            activeEnemies.Add(enemy);
+            controller.gameObject.SetActive(true);
+            activeEnemies.Add(controller.gameObject);
 
-            Damageable dmg = enemy.GetComponent<Damageable>();
+            if (controller.startsAsRanged) rangedCount++;
+
+            Damageable dmg = controller.GetComponent<Damageable>();
             if (dmg != null)
-                dmg.OnDeath += () => activeEnemies.Remove(enemy);
+            {
+                GameObject go = controller.gameObject;
+                dmg.OnDeath += () => activeEnemies.Remove(go);
+            }
         }
 
-        // Todos spawneados ? asignar ranged ahora
-        StartCoroutine(AssignRangedAfterSpawn(config.ranged));
-        Debug.Log($"Ronda {index + 1} iniciada — {config.total} enemigos ({config.ranged} ranged)");
+        EnemyManager.Instance?.SetMaxRanged(rangedCount);
+        Debug.Log($"Ronda {index + 1} — {enemies.Length} enemigos ({rangedCount} ranged)");
     }
-
-    private IEnumerator AssignRangedAfterSpawn(int rangedCount)
-    {
-        yield return null; // esperar un frame a que los EnemyController hagan su Start
-
-        EnemyManager.Instance?.AssignRanged(rangedCount);
-    }
-
     private void ClearEnemies()
     {
-        foreach (var e in activeEnemies)
-            if (e != null) Destroy(e);
+        foreach (var container in waveContainers)
+            if (container != null) container.SetActive(false);
         activeEnemies.Clear();
         EnemyManager.Instance?.ClearAllEnemies();
     }
@@ -142,23 +147,8 @@ public class RoundManager : MonoBehaviour
         return currentRound > 0 && activeEnemies.Count == 0;
     }
 
-    private Vector3 GetRandomSpawnPosition()
-    {
-        float x = Random.Range(-spawnAreaSize.x / 2f, spawnAreaSize.x / 2f);
-        float z = Random.Range(-spawnAreaSize.y / 2f, spawnAreaSize.y / 2f);
-        return spawnAreaCenter.position + new Vector3(x, 0, z);
-    }
-
     private int GetCurrentRoundIndex()
     {
         return currentRound - 1;
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        if (spawnAreaCenter == null) return;
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireCube(spawnAreaCenter.position,
-            new Vector3(spawnAreaSize.x, 0.1f, spawnAreaSize.y));
     }
 }

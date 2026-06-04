@@ -87,8 +87,8 @@ public class PlayerDamageReceiver : MonoBehaviour
         // No rotar si está bloqueando
         if (combat != null && combat.blockBox.activeSelf) return;
 
-        if (direction.sqrMagnitude > 0.01f)
-            rb.MoveRotation(Quaternion.LookRotation(direction));
+        //if (direction.sqrMagnitude > 0.01f)
+            //rb.MoveRotation(Quaternion.LookRotation(direction));
     }
 
     // -------------------------------------------

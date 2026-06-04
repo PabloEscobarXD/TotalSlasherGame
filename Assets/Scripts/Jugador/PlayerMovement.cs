@@ -28,6 +28,7 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+
         if (playerCombatIntance.isDashing &&
             !playerCombatIntance.isTornado)
             return;

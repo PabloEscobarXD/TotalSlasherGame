@@ -54,7 +54,7 @@ public class RangedState : EnemyState
         // Movimiento — alejarse si el jugador está muy cerca
         if (Vector3.Distance(enemy.transform.position, enemy.GetPlayer().position) <= enemy.rangedRange)
         {
-            enemy.MoveAwayFromPlayer();
+            //enemy.MoveAwayFromPlayer();
             enemy.SetAnimRetreat();
         }
 

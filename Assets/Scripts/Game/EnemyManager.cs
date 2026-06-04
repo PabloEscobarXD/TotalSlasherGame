@@ -144,21 +144,4 @@ public class EnemyManager : MonoBehaviour
         allEnemies.Clear();
         attackWaveInProgress = false;
     }
-
-    public void AssignRanged(int count)
-    {
-        // Limpiar referencias nulas antes de asignar
-        allEnemies.RemoveAll(e => e == null);
-
-        List<EnemyController> snapshot = new List<EnemyController>(allEnemies);
-        Shuffle(snapshot);
-        int total = Mathf.Min(count, snapshot.Count);
-
-        for (int i = 0; i < total; i++)
-        {
-            snapshot[i].prefersRanged = true;
-            snapshot[i].fsm.ChangeState(new RangedState(snapshot[i]));
-            Debug.Log($"{snapshot[i].gameObject.name} asignado como Ranged");
-        }
-    }
 }

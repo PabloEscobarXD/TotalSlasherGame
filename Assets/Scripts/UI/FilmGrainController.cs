@@ -32,7 +32,7 @@ public class FilmGrainController : MonoBehaviour
         // Response oscila solo si no está al máximo de vida
         if (healthRatio < 1f)
         {
-            float response = Mathf.PingPong(Time.time * responseOscillationSpeed, 0.5f);
+            float response = Mathf.PingPong(Time.time * responseOscillationSpeed, 1f);
             filmGrain.response.Override(response);
         }
         else

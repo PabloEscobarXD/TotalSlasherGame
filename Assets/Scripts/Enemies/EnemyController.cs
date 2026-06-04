@@ -19,6 +19,9 @@ public class EnemyController : MonoBehaviour
     public float knockbackDuration = 0.15f;
     private bool isKnockedBack = false;
 
+    [Header("Tipo")]
+    public bool startsAsRanged = false; // seteado antes de Start por RoundManager
+
 
     [HideInInspector] public StateMachine fsm;
     private Transform player;
@@ -104,7 +107,18 @@ public class EnemyController : MonoBehaviour
 
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
         fsm = new StateMachine();
-        fsm.ChangeState(new EvaluateState(this));
+
+        // Ir directo al estado correcto sin evaluar
+        if (startsAsRanged)
+        {
+            prefersRanged = true;
+            fsm.ChangeState(new RangedState(this));
+        }
+        else
+        {
+            fsm.ChangeState(new MeleeState(this));
+        }
+
         EnemyManager.Instance?.RegisterEnemy(this);
     }
 
@@ -259,7 +273,7 @@ public class EnemyController : MonoBehaviour
         if (projectilePrefab == null || player == null) return;
 
         Vector3 dir = (player.position - firePoint.position).normalized;
-        GameObject proj = Instantiate(projectilePrefab, firePoint.position, Quaternion.LookRotation(dir));
+        GameObject proj = Instantiate(projectilePrefab, firePoint.position, Quaternion.LookRotation(firePoint.forward*2));
         proj.GetComponent<Projectile>()?.Init(dir);
     }
 
