@@ -13,4 +13,9 @@ public class ResultsUI : MonoBehaviour
         gradeText.text = ScoreManager.Instance.FinalGrade;
         scoreText.text = ScoreManager.Instance.FinalScore.ToString("N0");
     }
+
+    private void Update()
+    {
+        
+    }
 }

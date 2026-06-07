@@ -433,7 +433,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 22.37
+      value: 24.390001
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalRotation.w
@@ -568,7 +568,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 22.3
+      value: 24.32
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1262,6 +1262,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ConeHeadV2
       objectReference: {fileID: 0}
+    - target: {fileID: 9121481321417569872, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1632,6 +1636,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ConeHeadV2 (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 9121481321417569872, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1702,6 +1710,10 @@ PrefabInstance:
     - target: {fileID: 9121481321417569872, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_Name
       value: ConeHeadV2 (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9121481321417569872, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2131,15 +2143,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 19.2
+      value: 31.000002
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0
+      value: 0.02
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 22.3
+      value: 30.279999
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2508,6 +2520,10 @@ PrefabInstance:
     - target: {fileID: 9121481321417569872, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_Name
       value: ConeHeadV2 (6)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9121481321417569872, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3190,7 +3206,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &343389434
 Transform:
   m_ObjectHideFlags: 0
@@ -3301,15 +3317,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.77
+      value: -1.5
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.01
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 22.42
+      value: 24.4
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalRotation.w
@@ -3525,6 +3541,10 @@ PrefabInstance:
     - target: {fileID: 9121481321417569872, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_Name
       value: ConeHeadV2 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9121481321417569872, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6272,7 +6292,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 22.3
+      value: 24.32
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalRotation.w
@@ -7361,15 +7381,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 13.596543
+      value: 19.4
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.01
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 22.3
+      value: 24.3
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalRotation.w
@@ -7895,7 +7915,6 @@ Transform:
   - {fileID: 1052222234}
   - {fileID: 1889411284}
   - {fileID: 866417430}
-  - {fileID: 1192194340}
   - {fileID: 1500705460}
   - {fileID: 265913351}
   m_Father: {fileID: 1376872978}
@@ -8137,15 +8156,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -4.7765436
+      value: -17.8
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.01
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 22.3
+      value: 29.1
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalRotation.w
@@ -8188,77 +8207,6 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
   m_PrefabInstance: {fileID: 1191439104}
-  m_PrefabAsset: {fileID: 0}
---- !u!1001 &1192194339
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1173520889}
-    m_Modifications:
-    - target: {fileID: 2670910739517500237, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
-      propertyPath: startsAsRanged
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.33482504
-      objectReference: {fileID: 0}
-    - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 10.76654
-      objectReference: {fileID: 0}
-    - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 40
-      objectReference: {fileID: 0}
-    - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.0000004989826
-      objectReference: {fileID: 0}
-    - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.0007941419
-      objectReference: {fileID: 0}
-    - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.9999995
-      objectReference: {fileID: 0}
-    - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.00062832894
-      objectReference: {fileID: 0}
-    - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0.072
-      objectReference: {fileID: 0}
-    - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: -180
-      objectReference: {fileID: 0}
-    - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0.091
-      objectReference: {fileID: 0}
-    - target: {fileID: 9121481321417569872, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
-      propertyPath: m_Name
-      value: ConeHeadV2 (1)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects:
-    - {fileID: 891422954100321026, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
---- !u!4 &1192194340 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
-  m_PrefabInstance: {fileID: 1192194339}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1192654859
 PrefabInstance:
@@ -8327,6 +8275,10 @@ PrefabInstance:
     - target: {fileID: 9121481321417569872, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_Name
       value: ConeHeadV2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9121481321417569872, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -10408,6 +10360,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ConeHeadV2 (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 9121481321417569872, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -12072,15 +12028,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.96
+      value: -14.983455
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.01
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 22.3
+      value: 31.119999
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalRotation.w
@@ -12146,7 +12102,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 22.3
+      value: 24.32
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalRotation.w
@@ -12259,6 +12215,10 @@ PrefabInstance:
     - target: {fileID: 9121481321417569872, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_Name
       value: ConeHeadV2 (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9121481321417569872, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -12797,6 +12757,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ConeHeadV2 (7)
       objectReference: {fileID: 0}
+    - target: {fileID: 9121481321417569872, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -13274,6 +13238,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ConeHeadV2 (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 9121481321417569872, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -13492,6 +13460,10 @@ PrefabInstance:
     - target: {fileID: 9121481321417569872, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_Name
       value: ConeHeadV2 (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9121481321417569872, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -13815,6 +13787,10 @@ PrefabInstance:
     - target: {fileID: 9121481321417569872, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_Name
       value: ConeHeadV2 (8)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9121481321417569872, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -14184,15 +14160,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 16.8
+      value: 28.6
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.02
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 22.3
+      value: 32.3
       objectReference: {fileID: 0}
     - target: {fileID: 8493175660695792874, guid: 332e17d7cde794047b7bab94015453c6, type: 3}
       propertyPath: m_LocalRotation.w
