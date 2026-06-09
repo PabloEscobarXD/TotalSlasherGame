@@ -15,6 +15,6 @@ MonoBehaviour:
   sounds:
   - id: music1
     clip: {fileID: 8300000, guid: 238f6cc0c4cb20142a186e98c3fa462a, type: 3}
-    volume: 0.4
+    volume: 0.5
     pitch: 1
     minInterval: 0.1
