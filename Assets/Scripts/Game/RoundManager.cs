@@ -25,6 +25,9 @@ public class RoundManager : MonoBehaviour
     public float cinematicDuration = 3f;  // cuánto tiempo muestra la oleada
     public float returnDuration = 1.5f;   // cuánto tarda en volver al jugador
 
+    private PlayerMovement playerMovement;
+    private PlayerCombat playerCombat;
+
     [System.Serializable]
     public struct RoundConfig
     {
@@ -56,7 +59,11 @@ public class RoundManager : MonoBehaviour
     {
         initialPlayerPosition = playerPrefab.transform.position;
         initialPlayerRotation = playerPrefab.transform.rotation;
-        Debug.Log($"Posición inicial guardada: {initialPlayerPosition}");
+
+        playerMovement = playerPrefab.GetComponent<PlayerMovement>();
+        playerCombat = playerPrefab.GetComponent<PlayerCombat>();
+
+        SetPlayerInputEnabled(false); // bloquear antes de la primera cinemática
         StartRound(1);
     }
 
@@ -151,6 +158,7 @@ public class RoundManager : MonoBehaviour
 
     private IEnumerator SpawnRoundCinematic(int index)
     {
+        SetPlayerInputEnabled(false);
         if (index >= waveContainers.Length || waveContainers[index] == null) yield break;
 
         // 1. Activar enemigos pero congelar su IA
@@ -176,9 +184,6 @@ public class RoundManager : MonoBehaviour
         }
 
         EnemyManager.Instance?.SetMaxRanged(rangedCount);
-
-        PlayerInput playerInput = FindAnyObjectByType<PlayerInput>();
-        playerInput?.SwitchCurrentActionMap("UI"); // bloquea controles de juego
 
         // 2. Calcular centro de la oleada
         Vector3 waveCenter = Vector3.zero;
@@ -209,7 +214,7 @@ public class RoundManager : MonoBehaviour
             objectiveBanner?.Play($"Ronda {index + 1}");
         }
 
-        playerInput?.SwitchCurrentActionMap("Player");
+        SetPlayerInputEnabled(true);
         // 6. Descongelar IA
         foreach (EnemyController controller in enemies)
             controller.enabled = true;
@@ -233,5 +238,11 @@ public class RoundManager : MonoBehaviour
     private int GetCurrentRoundIndex()
     {
         return currentRound - 1;
+    }
+
+    private void SetPlayerInputEnabled(bool enabled)
+    {
+        if (playerMovement != null) playerMovement.enabled = enabled;
+        if (playerCombat != null) playerCombat.enabled = enabled;
     }
 }

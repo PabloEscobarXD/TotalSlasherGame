@@ -25,15 +25,15 @@ public class PlayerDamageReceiver : MonoBehaviour
     private PlayerMovement movement;
     public bool isUntouchable = false; // durante tornado
 
-    public UIShake uiShake;
-
+    private UIShake uiShake;
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         combat = GetComponent<PlayerCombat>();
         movement = GetComponent<PlayerMovement>();
+        currentHP = maxHP;
 
-        currentHP = maxHP;   // iniciar vida llena
+        uiShake = FindAnyObjectByType<UIShake>();
     }
 
     // -------------------------------------------
@@ -49,6 +49,10 @@ public class PlayerDamageReceiver : MonoBehaviour
         if (isStunned) return;
 
         ApplyHealthReduction(damage);
+
+        if (uiShake == null)
+            uiShake = FindAnyObjectByType<UIShake>();
+
         uiShake?.TriggerShake();
 
         if (!isUntouchable)

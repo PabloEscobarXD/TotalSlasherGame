@@ -22,6 +22,29 @@ public class UIShake : MonoBehaviour
     private Vignette vignette;
     private Color originalVignetteColor;
 
+    void OnEnable()
+    {
+        // Buscar elementos por tag si las referencias del Inspector se perdieron
+        if (elementsToShake.Count == 0 || elementsToShake[0] == null)
+        {
+            elementsToShake.Clear();
+            // Buscar por tag — asigná el tag "ShakeElement" a los objetos en la escena
+            foreach (GameObject go in GameObject.FindGameObjectsWithTag("ShakeElement"))
+            {
+                RectTransform rt = go.GetComponent<RectTransform>();
+                if (rt != null) elementsToShake.Add(rt);
+            }
+        }
+
+        originalPositions.Clear();
+        foreach (RectTransform rt in elementsToShake)
+            if (rt != null) originalPositions.Add(rt.anchoredPosition);
+
+        if (globalVolume != null)
+            globalVolume.profile.TryGet(out vignette);
+        if (vignette != null)
+            originalVignetteColor = vignette.color.value;
+    }
     void Start()
     {
         foreach (RectTransform rt in elementsToShake)
