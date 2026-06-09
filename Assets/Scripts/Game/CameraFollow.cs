@@ -15,6 +15,16 @@ public class CameraFollow : MonoBehaviour
     public float minZoom = 4f;
     public float maxZoom = 15f;
 
+    [Header("Cinemática")]
+    public bool cinematicMode = false;
+    public Vector3 cinematicOffset = new Vector3(0, 8f, -12f);
+    public Vector3 cinematicStartOffset = new Vector3(0, 8f, 20f); // lado opuesto
+    public Vector3 cinematicLookOffset = new Vector3(0, 3f, 0);
+    private Vector3 cinematicStartPos;
+    private Vector3 cinematicEndPos;
+    private float cinematicDuration = 0f;
+    private float cinematicElapsed = 0f;
+
     private float currentYaw;
     private bool manualControl = false; // true cuando el jugador mueve el stick
     private PlayerInput playerInput;
@@ -30,6 +40,21 @@ public class CameraFollow : MonoBehaviour
     private void LateUpdate()
     {
         if (target == null) return;
+
+        if (cinematicMode)
+        {
+            cinematicElapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(cinematicElapsed / cinematicDuration);
+            float smoothT = Mathf.SmoothStep(0f, 1f, t); // easing suave
+
+            // Actualizar posición final en caso de que el jugador se mueva
+            Quaternion _rotation = Quaternion.Euler(0, currentYaw, 0);
+            cinematicEndPos = target.position + _rotation * offset;
+
+            transform.position = Vector3.Lerp(cinematicStartPos, cinematicEndPos, smoothT);
+            transform.LookAt(target.position + cinematicLookOffset);
+            return;
+        }
 
         Vector2 camInput = Vector2.zero;
         if (playerInput != null)
@@ -73,5 +98,28 @@ public class CameraFollow : MonoBehaviour
         Vector3 desiredPosition = target.position + rotation * offset;
         transform.position = Vector3.Lerp(transform.position, desiredPosition, followSpeed * Time.deltaTime);
         transform.LookAt(target.position + Vector3.up * 3f);
+    }
+    public void StartCinematic(Vector3 waveCenter, float duration)
+    {
+        cinematicMode = true;
+        cinematicDuration = duration;
+        cinematicElapsed = 0f;
+        lockRotation = true;
+
+        // Arrancar desde el lado opuesto de la arena
+        cinematicStartPos = waveCenter + cinematicStartOffset;
+
+        // Terminar en la posición normal del jugador
+        Quaternion rotation = Quaternion.Euler(0, currentYaw, 0);
+        cinematicEndPos = target.position + rotation * offset;
+
+        // Teletransportar la cámara al punto de inicio
+        transform.position = cinematicStartPos;
+    }
+
+    public void EndCinematic()
+    {
+        cinematicMode = false;
+        lockRotation = false;
     }
 }

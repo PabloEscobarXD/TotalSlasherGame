@@ -9,11 +9,21 @@ public class RoundManager : MonoBehaviour
 {
     public static RoundManager Instance { get; private set; }
 
+
     [Header("Prefabs")]
     public GameObject enemyPrefab;
+    public GameObject playerPrefab;
+    private Vector3 initialPlayerPosition;
+    private Quaternion initialPlayerRotation;
 
     [Header("Configuración de rondas")]
     public float timeBetweenRounds = 3f;
+
+    [Header("Cinemática")]
+    public CameraFollow cameraFollow;
+    public ObjectiveBanner objectiveBanner;
+    public float cinematicDuration = 3f;  // cuánto tiempo muestra la oleada
+    public float returnDuration = 1.5f;   // cuánto tarda en volver al jugador
 
     [System.Serializable]
     public struct RoundConfig
@@ -44,6 +54,9 @@ public class RoundManager : MonoBehaviour
     }
     private void Start()
     {
+        initialPlayerPosition = playerPrefab.transform.position;
+        initialPlayerRotation = playerPrefab.transform.rotation;
+        Debug.Log($"Posición inicial guardada: {initialPlayerPosition}");
         StartRound(1);
     }
 
@@ -56,6 +69,19 @@ public class RoundManager : MonoBehaviour
         // Debug manual para ir a resultados
         if (Keyboard.current.digit4Key.wasPressedThisFrame)
             TriggerVictory();
+
+        if (Keyboard.current.digit5Key.wasPressedThisFrame)
+        {
+            // Matar todos los enemigos activos para triggear NextRoundRoutine naturalmente
+            foreach (var e in new List<GameObject>(activeEnemies))
+            {
+                if (e != null)
+                {
+                    Damageable dmg = e.GetComponent<Damageable>();
+                    if (dmg != null) dmg.TakeDamage(9999f, Vector3.zero, "Debug", Damageable.AttackType.Normal);
+                }
+            }
+        }
 
         if (currentRound > 0 && !waitingForNextRound && AllEnemiesDead())
             StartCoroutine(NextRoundRoutine());
@@ -96,8 +122,22 @@ public class RoundManager : MonoBehaviour
             TriggerVictory();
             yield break;
         }
-
+        AudioManager.GetOrCreate().PlaySFX("roundClear");
         yield return new WaitForSeconds(timeBetweenRounds);
+        // Teletransportar jugador a posición inicial ANTES de que la cámara llegue
+        Debug.Log($"Teletransportando a: {initialPlayerPosition}, posición actual: {playerPrefab.transform.position}");
+        playerPrefab.transform.position = initialPlayerPosition;
+        playerPrefab.transform.rotation = initialPlayerRotation;
+
+        Rigidbody playerRb = playerPrefab.GetComponent<Rigidbody>();
+        if (playerRb != null)
+        {
+            playerRb.linearVelocity = Vector3.zero;
+            playerRb.angularVelocity = Vector3.zero;
+            playerRb.position = initialPlayerPosition; // forzar también por física
+        }
+
+        
 
         currentRound = nextIndex + 1;
         SpawnRound(nextIndex);
@@ -106,18 +146,23 @@ public class RoundManager : MonoBehaviour
 
     private void SpawnRound(int index)
     {
-        if (index >= waveContainers.Length || waveContainers[index] == null) return;
+        StartCoroutine(SpawnRoundCinematic(index));
+    }
 
+    private IEnumerator SpawnRoundCinematic(int index)
+    {
+        if (index >= waveContainers.Length || waveContainers[index] == null) yield break;
+
+        // 1. Activar enemigos pero congelar su IA
         waveContainers[index].SetActive(true);
-
         EnemyController[] enemies = waveContainers[index].GetComponentsInChildren<EnemyController>(true);
         int rangedCount = 0;
-
         activeEnemies.Clear();
 
         foreach (EnemyController controller in enemies)
         {
             controller.gameObject.SetActive(true);
+            controller.enabled = false; // congelar IA
             activeEnemies.Add(controller.gameObject);
 
             if (controller.startsAsRanged) rangedCount++;
@@ -131,7 +176,45 @@ public class RoundManager : MonoBehaviour
         }
 
         EnemyManager.Instance?.SetMaxRanged(rangedCount);
-        Debug.Log($"Ronda {index + 1} — {enemies.Length} enemigos ({rangedCount} ranged)");
+
+        PlayerInput playerInput = FindAnyObjectByType<PlayerInput>();
+        playerInput?.SwitchCurrentActionMap("UI"); // bloquea controles de juego
+
+        // 2. Calcular centro de la oleada
+        Vector3 waveCenter = Vector3.zero;
+        foreach (EnemyController e in enemies)
+            waveCenter += e.transform.position;
+        waveCenter /= enemies.Length;
+
+        // 3. Paneo cinemático hacia la oleada
+        cameraFollow?.StartCinematic(waveCenter, cinematicDuration);
+        yield return new WaitForSeconds(cinematicDuration);
+
+        // 4. Volver al jugador
+        cameraFollow?.EndCinematic();
+        yield return new WaitForSeconds(returnDuration);
+
+        // Resetear velocidad del rigidbody para evitar inercia
+        Rigidbody playerRb = playerPrefab.GetComponent<Rigidbody>();
+        if (playerRb != null)
+        {
+            playerRb.linearVelocity = Vector3.zero;
+            playerRb.angularVelocity = Vector3.zero;
+        }
+
+        // 5. Mostrar banner "Ronda X"
+        if (objectiveBanner != null)
+        {
+            objectiveBanner.gameObject.SetActive(true);
+            objectiveBanner?.Play($"Ronda {index + 1}");
+        }
+
+        playerInput?.SwitchCurrentActionMap("Player");
+        // 6. Descongelar IA
+        foreach (EnemyController controller in enemies)
+            controller.enabled = true;
+
+        Debug.Log($"Ronda {index + 1} iniciada — {enemies.Length} enemigos ({rangedCount} ranged)");
     }
     private void ClearEnemies()
     {

@@ -33,3 +33,8 @@ MonoBehaviour:
     volume: 0.7
     pitch: 1
     minInterval: 0.1
+  - id: enemy_death
+    clip: {fileID: 8300000, guid: ab426168cbe91314684842119b6d9635, type: 3}
+    volume: 1
+    pitch: 1
+    minInterval: 0.1

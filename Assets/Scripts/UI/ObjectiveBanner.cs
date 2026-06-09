@@ -26,7 +26,6 @@ public class ObjectiveBanner : MonoBehaviour
         RectTransform canvasRT = parentCanvas.GetComponent<RectTransform>();
         canvasWidth = canvasRT.rect.width;
 
-        StartCoroutine(PlayBannerAnimation());
     }
 
     public void SetMessage(string text)
@@ -70,5 +69,12 @@ public class ObjectiveBanner : MonoBehaviour
         }
 
         gameObject.SetActive(false);
+    }
+
+    public void Play(string text)
+    {
+        message.text = text;
+        gameObject.SetActive(true);
+        StartCoroutine(PlayBannerAnimation());
     }
 }
