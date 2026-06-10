@@ -28,6 +28,8 @@ public class RoundManager : MonoBehaviour
     private PlayerMovement playerMovement;
     private PlayerCombat playerCombat;
 
+    private bool isSpawning = false;
+
     [System.Serializable]
     public struct RoundConfig
     {
@@ -91,7 +93,7 @@ public class RoundManager : MonoBehaviour
             }
         }
 
-        if (currentRound > 0 && !waitingForNextRound && AllEnemiesDead())
+        if (currentRound > 0 && !waitingForNextRound && !isSpawning && AllEnemiesDead())
             StartCoroutine(NextRoundRoutine());
     }
 
@@ -156,9 +158,13 @@ public class RoundManager : MonoBehaviour
 
     private IEnumerator SpawnRoundCinematic(int index)
     {
+        isSpawning = true;
         SetPlayerInputEnabled(false);
-        if (index >= waveContainers.Length || waveContainers[index] == null) yield break;
-
+        if (index >= waveContainers.Length || waveContainers[index] == null)
+        {
+            isSpawning = true;
+            yield break;
+        }
         // 1. Activar enemigos pero congelar su IA
         waveContainers[index].SetActive(true);
         EnemyController[] enemies = waveContainers[index].GetComponentsInChildren<EnemyController>(true);
@@ -218,6 +224,7 @@ public class RoundManager : MonoBehaviour
             controller.enabled = true;
 
         Debug.Log($"Ronda {index + 1} iniciada — {enemies.Length} enemigos ({rangedCount} ranged)");
+        isSpawning = false;
     }
     private void ClearEnemies()
     {

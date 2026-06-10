@@ -20,9 +20,21 @@ public class FurySystem : MonoBehaviour
     private bool slowmoActive = false;
     private Coroutine slowmoRoutine;
 
+    private bool maxRageSoundPlayed = false;
+
     void Update()
     {
         HandleDecay();
+
+        if (fury >= 0.7f && !maxRageSoundPlayed)
+        {
+            AudioManager.Instance.PlaySFX("maxRage");
+            maxRageSoundPlayed = true;
+        }
+        else if (fury < 0.7f)
+        {
+            maxRageSoundPlayed = false; // reset para que suene de nuevo la próxima vez
+        }
     }
 
     // -------------------- Furia Base --------------------

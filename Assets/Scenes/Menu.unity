@@ -5764,6 +5764,12 @@ MonoBehaviour:
   maxChargeTime: 1.5
   minChargeTime: 0.11
   areaBurstMaxRadius: 3.2
+  areaCooldown: 0.5
+  furyAreaDashSpeed: 80
+  furyAreaDashDuration: 0.1
+  furyAreaDashDamage: 40
+  furyAreaDashRadius: 5
+  furyAreaMaxHits: 5
   tornadoRadius: 7
   tornadoDamage: 4
   tornadoHits: 5
@@ -5781,8 +5787,6 @@ MonoBehaviour:
   animator: {fileID: 1394598563}
   comboText: {fileID: 0}
   comboGroup: {fileID: 0}
-  comboTimeLimit: 5
-  comboCount: 0
   isDashing: 1
   isCharging: 0
 --- !u!114 &1394598556
@@ -5857,6 +5861,8 @@ MonoBehaviour:
   damage: 10
   damageReductionMultiplier: 1
   isUntouchable: 0
+  firstButton: {fileID: 0}
+  loseCanvas: {fileID: 0}
 --- !u!114 &1394598560
 MonoBehaviour:
   m_ObjectHideFlags: 0

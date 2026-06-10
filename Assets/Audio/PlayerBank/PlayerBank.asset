@@ -38,3 +38,18 @@ MonoBehaviour:
     volume: 0.9
     pitch: 1
     minInterval: 0.1
+  - id: maxRage
+    clip: {fileID: 8300000, guid: 47a94f6ffa863ad4e9a53a81c7986bb3, type: 3}
+    volume: 0.7
+    pitch: 1
+    minInterval: 0.1
+  - id: furySingleAttack
+    clip: {fileID: 8300000, guid: 08af1cb1ebcedf44fa4283576c56871c, type: 3}
+    volume: 0.6
+    pitch: 1
+    minInterval: 0.1
+  - id: furyAreaAttack
+    clip: {fileID: 8300000, guid: edec066302647024ab2eed45a85b8ccd, type: 3}
+    volume: 0.7
+    pitch: 1
+    minInterval: 0.1

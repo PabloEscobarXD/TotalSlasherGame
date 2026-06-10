@@ -112,7 +112,6 @@ public class TargetingSystem : MonoBehaviour
 
         if (!enemiesInCone.Any()) return null;
 
-        // Más lejano en vez de más cercano
         return enemiesInCone
             .OrderByDescending(h => Vector3.Distance(transform.position, h.transform.position))
             .First().transform;

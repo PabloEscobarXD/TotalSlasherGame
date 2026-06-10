@@ -20,8 +20,8 @@ public class PlayerCombat : MonoBehaviour
     public float furyLineDashSpeed = 60f;
     public float furyLineDashDuration = 0.3f;
     public float furyLineDashDamage = 35f;
-    public float furyLineDashWidth = 1.5f; // ancho de la hitbox lineal
-    public bool isFuryDashing = false; // agregar al header de campos
+    public float furyLineDashWidth = 1.5f;
+    public bool isFuryDashing = false;
 
     [Header("Ataque en área")]
     public float areaDashSpeed = 80f;
@@ -29,6 +29,15 @@ public class PlayerCombat : MonoBehaviour
     public float maxChargeTime = 1.5f;
     public float minChargeTime = 0.4f;
     public float areaBurstMaxRadius = 5f;
+    public float areaCooldown = 0.5f;
+    private bool canAreaAttack = true;
+
+    [Header("Ataque en área con furia")]
+    public float furyAreaDashSpeed = 80f;
+    public float furyAreaDashDuration = 0.095f;
+    public float furyAreaDashDamage = 40f;
+    public float furyAreaDashRadius = 5f;
+    public int furyAreaMaxHits = 5;
 
     [Header("Tornado de Furia")]
     public float tornadoRadius = 4f;
@@ -60,13 +69,6 @@ public class PlayerCombat : MonoBehaviour
     private Rigidbody rb;
     private FurySystem fury;
 
-    [Header("Combo")]
-    private bool isComboActive = false;
-    private float comboTimer = 0f;
-    public float comboTimeLimit = 5f;
-    public int comboCount = 0;
-
-
     public bool isDashing = false;
     public bool isCharging = false;
     private float chargeTimer = 0f;
@@ -76,11 +78,10 @@ public class PlayerCombat : MonoBehaviour
     private CameraFollow cameraFollow;
 
     private PlayerMovement movement;
-
     private PlayerInput playerInput;
 
-    private Vector3 chargeDirection; // dirección acumulada durante la carga
-
+    private Vector3 chargeDirection;
+    private Vector3 lastStickDirection;
 
     void Start()
     {
@@ -88,7 +89,7 @@ public class PlayerCombat : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         fury = GetComponent<FurySystem>();
         cameraFollow = Camera.main.GetComponent<CameraFollow>();
-        comboText.text = comboCount.ToString();
+        comboText.text = $"x{ScoreManager.Instance.GetCurrentMultiplier():F1}";
         comboGroup.SetActive(false);
         movement = GetComponent<PlayerMovement>();
 
@@ -102,30 +103,31 @@ public class PlayerCombat : MonoBehaviour
 
     void Update()
     {
-        comboText.text = comboCount.ToString();
+        comboText.text = $"x{ScoreManager.Instance.GetCurrentMultiplier():F1}";
+
+        // Guardar última dirección válida del stick
+        if (movement != null && movement.WorldMoveDirection.sqrMagnitude > 0.01f)
+            lastStickDirection = movement.WorldMoveDirection;
 
         if (isCharging)
         {
             chargeTimer += Time.deltaTime;
             if (movement != null && movement.WorldMoveDirection.sqrMagnitude > 0.01f)
             {
-                chargeDirection = movement.WorldMoveDirection; // guardar última válida
+                chargeDirection = movement.WorldMoveDirection;
                 Quaternion targetRot = Quaternion.LookRotation(chargeDirection);
                 rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRot, 0.2f));
             }
         }
 
-        if (isComboActive)
+        if (ScoreManager.Instance != null && ScoreManager.Instance.GetCurrentComboKills() > 1)
         {
             comboGroup.SetActive(true);
-            comboTimer += Time.deltaTime;
-            if (comboTimer >= comboTimeLimit)
-            {
-                comboCount = 0;
-                comboTimer = 0f;
-                isComboActive = false;
-                comboGroup.SetActive(false);
-            }
+            comboText.text = $"x{ScoreManager.Instance.GetCurrentMultiplier():F1}";
+        }
+        else
+        {
+            comboGroup.SetActive(false);
         }
     }
 
@@ -134,27 +136,24 @@ public class PlayerCombat : MonoBehaviour
     {
         if (ctx.started)
         {
-            // Solo los ataques de furia son incancelables
             if (isTornado || isFuryDashing) return;
 
-            // Cancelar todo lo demás
             if (isDashing || isCharging)
                 CancelAreaAttack();
 
-            // Detener cualquier corrutina restante y limpiar estado
             StopAllCoroutines();
             playerInput.actions["Move"].Enable();
             rb.linearVelocity = Vector3.zero;
             isDashing = false;
             isCharging = false;
             canDirectedAttack = true;
+            canAreaAttack = true;
             swordHitbox.gameObject.SetActive(false);
 
             int playerLayer = gameObject.layer;
             int enemyLayer = LayerMask.NameToLayer("Enemy");
             Physics.IgnoreLayerCollision(playerLayer, enemyLayer, false);
 
-            // Giro hacia enemigo más cercano si hay uno en rango
             Transform nearest = targeting.GetNearestEnemy();
             if (nearest != null)
             {
@@ -183,7 +182,6 @@ public class PlayerCombat : MonoBehaviour
             CancelBlock();
             if (!isDashing && canDirectedAttack)
                 ExecuteAttack();
-            // sin buffer — si está ocupado, el input se ignora
         }
     }
 
@@ -200,19 +198,24 @@ public class PlayerCombat : MonoBehaviour
         }
 
         Vector3 attackDir = movement != null ? movement.WorldMoveDirection : transform.forward;
-        currentTarget = targeting.GetNearestEnemyInDirection(attackDir);
+
+        // Furia: enemigo más lejano. Normal: enemigo más cercano
+        if (furyAttack)
+            currentTarget = targeting.GetFarthestEnemyInDirection(attackDir);
+        else
+            currentTarget = targeting.GetNearestEnemyInDirection(attackDir);
 
         if (attackDir.sqrMagnitude > 0.01f)
             rb.MoveRotation(Quaternion.LookRotation(attackDir));
 
         if (furyAttack)
         {
-            isDashing = true; // <-- agregar antes de la corrutina
+            isDashing = true;
             StartCoroutine(DashTowardsTarget(furyAttack));
         }
         else if (currentTarget != null)
         {
-            isDashing = true; // <-- agregar antes de la corrutina
+            isDashing = true;
             StartCoroutine(DashTowardsTarget(furyAttack));
         }
         else
@@ -232,7 +235,6 @@ public class PlayerCombat : MonoBehaviour
             yield break;
         }
 
-        // Dash normal (código existente)
         animator.SetTrigger("attackDash");
         float elapsed = 0f;
 
@@ -257,16 +259,9 @@ public class PlayerCombat : MonoBehaviour
         {
             Damageable dmg = currentTarget.GetComponent<Damageable>();
             if (dmg != null)
-            {
-                if(comboCount == 0)
-                    isComboActive = true;
-                comboCount++;
-                comboTimer = 0;
                 dmg.TakeDamage(dashDamage, transform.position, "Player", AttackType.Normal);
-            }
             fury.AddFury();
         }
-
     }
 
     private IEnumerator FuryLineDash()
@@ -276,11 +271,13 @@ public class PlayerCombat : MonoBehaviour
 
         int playerLayer = gameObject.layer;
         int enemyLayer = LayerMask.NameToLayer("Enemy");
-        Physics.IgnoreLayerCollision(playerLayer, enemyLayer, true); // <-- agregar
+        Physics.IgnoreLayerCollision(playerLayer, enemyLayer, true);
 
         Vector3 dashDir = transform.forward;
         float elapsed = 0f;
         HashSet<Damageable> alreadyHit = new HashSet<Damageable>();
+
+        AudioManager.Instance.PlaySFX("furySingleAttack");
 
         while (elapsed < furyLineDashDuration)
         {
@@ -300,7 +297,6 @@ public class PlayerCombat : MonoBehaviour
                 {
                     alreadyHit.Add(dmg);
                     dmg.TakeDamage(furyLineDashDamage, transform.position, "Player", AttackType.Normal);
-                    fury.AddFury();
                 }
             }
 
@@ -317,7 +313,7 @@ public class PlayerCombat : MonoBehaviour
     // ---------------- Ataque en Área ----------------
     public void AreaAttack(InputAction.CallbackContext ctx)
     {
-        if (ctx.started && !isDashing && !isTornado && !isCharging)
+        if (ctx.started && !isDashing && !isTornado && !isCharging && canAreaAttack)
         {
             CancelBlock();
             bool furyAttack = fury.IsFuryReady();
@@ -333,20 +329,13 @@ public class PlayerCombat : MonoBehaviour
             isCharging = true;
             chargeTimer = 0f;
 
-            chargeDirection = transform.forward; // fallback inmediato
+            chargeDirection = transform.forward;
             if (movement != null && movement.WorldMoveDirection.sqrMagnitude > 0.01f)
                 chargeDirection = movement.WorldMoveDirection;
 
             animator.SetTrigger("areaChargeStart");
-            chargeDirection = movement != null && movement.WorldMoveDirection.sqrMagnitude > 0.01f
-                ? movement.WorldMoveDirection
-                : transform.forward;
             animator.SetBool("areaChargeHold", true);
             AudioManager.GetOrCreate().PlaySFXCancellable("area_charge");
-        }
-        else if (ctx.performed && isCharging)
-        {
-            
         }
         else if (ctx.canceled)
         {
@@ -367,7 +356,6 @@ public class PlayerCombat : MonoBehaviour
             AudioManager.GetOrCreate().StopSFXCancellable();
             AudioManager.GetOrCreate().PlaySFX("area_release");
 
-            // Garantizar dirección válida
             if (chargeDirection.sqrMagnitude < 0.01f)
                 chargeDirection = transform.forward;
 
@@ -375,11 +363,12 @@ public class PlayerCombat : MonoBehaviour
             StartCoroutine(ExecuteAreaAttack(ratio, false, chargeDirection));
         }
     }
+
     private IEnumerator ExecuteAreaAttack(float ratio, bool furyAttack, Vector3 dashDir = default)
     {
         if (furyAttack)
         {
-            yield return StartCoroutine(FuryTornado());
+            yield return StartCoroutine(FuryAreaDash());
             yield break;
         }
 
@@ -400,17 +389,17 @@ public class PlayerCombat : MonoBehaviour
         {
             rb.linearVelocity = dashDir * areaDashSpeed;
 
-            // Burst activo durante todo el dash
             Collider[] hits = Physics.OverlapSphere(transform.position, areaBurstMaxRadius, targeting.enemyLayer);
             int hitCount = 0;
             foreach (Collider col in hits)
             {
-                if (hitCount >= 4) break; // máximo 4 enemigos
+                if (hitCount >= 5) break; // máximo 5 enemigos
                 Damageable dmg = col.GetComponent<Damageable>();
                 if (dmg != null && !alreadyHit.Contains(dmg))
                 {
                     alreadyHit.Add(dmg);
                     dmg.TakeDamage(damage, transform.position, "Player", AttackType.Normal);
+                    fury.AddFury();
                     hitCount++;
                 }
             }
@@ -422,57 +411,63 @@ public class PlayerCombat : MonoBehaviour
         rb.linearVelocity = Vector3.zero;
         Physics.IgnoreLayerCollision(playerLayer, enemyLayer, false);
         isDashing = false;
+        StartCoroutine(AreaAttackCooldown());
 
         swordHitbox.gameObject.SetActive(true);
         yield return new WaitForSeconds(swordActiveTime);
         swordHitbox.gameObject.SetActive(false);
     }
-    private IEnumerator FuryTornado()
+
+    private IEnumerator FuryAreaDash()
     {
-        PlayerDamageReceiver receiver = GetComponent<PlayerDamageReceiver>();
-        PlayerMovement movement = GetComponent<PlayerMovement>();
+        isDashing = true;
+        isFuryDashing = true;
 
-        if (receiver != null)
+        Vector3 dashDir = lastStickDirection.sqrMagnitude > 0.01f
+            ? lastStickDirection
+            : transform.forward;
+
+        int playerLayer = gameObject.layer;
+        int enemyLayer = LayerMask.NameToLayer("Enemy");
+        Physics.IgnoreLayerCollision(playerLayer, enemyLayer, true);
+
+        float elapsed = 0f;
+        HashSet<Damageable> alreadyHit = new HashSet<Damageable>();
+        
+        AudioManager.Instance.PlaySFX("furyAreaAttack");
+        while (elapsed < furyAreaDashDuration)
         {
-            receiver.isUntouchable = true;
-            receiver.damageReductionMultiplier = 0.4f;
-        }
+            rb.linearVelocity = dashDir * furyAreaDashSpeed;
 
-        float originalSpeed = 0f;
-        if (movement != null)
-        {
-            originalSpeed = movement.moveForce;
-            movement.moveForce = tornadoMoveSpeed;
-        }
-
-        isTornado = true;
-        // isDashing = true  <-- ELIMINADO, ya no bloquea PlayerMovement
-
-        for (int i = 0; i < tornadoHits; i++)
-        {
-            DrawDebugCircle(transform.position, tornadoRadius, Color.yellow);
-
-            Collider[] hits = Physics.OverlapSphere(transform.position, tornadoRadius, targeting.enemyLayer);
+            Collider[] hits = Physics.OverlapSphere(transform.position, furyAreaDashRadius, targeting.enemyLayer);
+            int hitCount = 0;
             foreach (Collider col in hits)
             {
+                if (hitCount >= furyAreaMaxHits) break;
                 Damageable dmg = col.GetComponent<Damageable>();
-                if (dmg != null)
-                    dmg.TakeDamage(tornadoDamage, transform.position, "Player", AttackType.Tornado);
+                if (dmg != null && !alreadyHit.Contains(dmg))
+                {
+                    alreadyHit.Add(dmg);
+                    dmg.TakeDamage(furyAreaDashDamage, transform.position, "Player", AttackType.Normal);
+                    hitCount++;
+                }
             }
 
-            yield return new WaitForSeconds(tornadoInterval);
+            elapsed += Time.deltaTime;
+            yield return null;
         }
 
-        isTornado = false;
+        rb.linearVelocity = Vector3.zero;
+        Physics.IgnoreLayerCollision(playerLayer, enemyLayer, false);
+        isDashing = false;
+        isFuryDashing = false;
+    }
 
-        if (movement != null)
-            movement.moveForce = originalSpeed;
-
-        if (receiver != null)
-        {
-            receiver.isUntouchable = false;
-            receiver.damageReductionMultiplier = 1f;
-        }
+    private IEnumerator AreaAttackCooldown()
+    {
+        canAreaAttack = false;
+        yield return new WaitForSeconds(areaCooldown);
+        canAreaAttack = true;
     }
 
     private void DrawDebugCircle(Vector3 center, float radius, Color color)
@@ -492,7 +487,6 @@ public class PlayerCombat : MonoBehaviour
 
     public void CancelAreaAttack()
     {
-        Debug.Log($"CancelAreaAttack llamado — isDashing:{isDashing} isCharging:{isCharging}");
         if (isDashing || isCharging)
         {
             StopAllCoroutines();
@@ -500,17 +494,17 @@ public class PlayerCombat : MonoBehaviour
             rb.linearVelocity = Vector3.zero;
             isDashing = false;
             isCharging = false;
-            attackCancelled = true; // marcar cancelación externa
+            attackCancelled = true;
             canDirectedAttack = true;
+            canAreaAttack = true; // <-- agregar
             animator.SetBool("areaChargeHold", false);
             animator.ResetTrigger("areaChargeStart");
-            animator.SetTrigger("areaFailedStart"); // forzar salida de Area_Start
+            animator.SetTrigger("areaFailedStart");
             swordHitbox.gameObject.SetActive(false);
 
             int playerLayer = gameObject.layer;
             int enemyLayer = LayerMask.NameToLayer("Enemy");
             Physics.IgnoreLayerCollision(playerLayer, enemyLayer, false);
-            Debug.Log("Cancelación ejecutada");
         }
     }
 
@@ -528,6 +522,7 @@ public class PlayerCombat : MonoBehaviour
         animator.SetTrigger("blockHit");
         AudioManager.GetOrCreate().PlaySFX("block_success");
     }
+
     private void CancelBlock()
     {
         if (blockBox.activeSelf)
@@ -545,11 +540,11 @@ public class PlayerCombat : MonoBehaviour
         else if (ctx.canceled)
             fury.SetFuryMode(false);
     }
+
     private IEnumerator DirectedAttackCooldown()
     {
         canDirectedAttack = false;
         yield return new WaitForSeconds(directedAttackCooldown);
         canDirectedAttack = true;
     }
-
 }

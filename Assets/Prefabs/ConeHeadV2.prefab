@@ -537,7 +537,7 @@ MonoBehaviour:
   knockbackDistance: 1.5
   knockbackDuration: 0.15
   startsAsRanged: 0
-  attackDuration: 1
+  attackDuration: 1.5
   projectilePrefab: {fileID: 6799535648861379796, guid: dd772a6bde14d85428561c3e596c9d2c, type: 3}
   firePoint: {fileID: 339638772619323204}
   prefersRanged: 0
@@ -545,6 +545,11 @@ MonoBehaviour:
   blockIdleTimeout: 2
   hitsToCounterAttack: 3
   isBlocking: 0
+  blockChance: 0.5
+  counterAttackChance: 0.6
+  guardHealth: 3
+  guardBreakChanceBase: 0
+  guardBreakChancePerHit: 0.15
   animator: {fileID: 0}
   particlesPrefab: {fileID: 1141330259687333427, guid: 6718dc24203da53468af9ada8fef7d6d, type: 3}
 --- !u!65 &6111039490359417826

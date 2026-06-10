@@ -47,6 +47,13 @@ public class EnemyController : MonoBehaviour
     public bool isBlocking = false;        // público para que EnemyManager lo consulte
     private float timeSinceLastBlockedHit = 0f;
     private Coroutine blockCoroutine;
+    [Range(0f, 1f)] public float blockChance = 0.5f;        // probabilidad de activar bloqueo
+    [Range(0f, 1f)] public float counterAttackChance = 0.6f; // probabilidad de contraatacar
+    public float guardHealth = 3f;          // "vida" de la guardia
+    public float guardBreakChanceBase = 0f; // probabilidad base por golpe
+    public float guardBreakChancePerHit = 0.15f; // se acumula cada golpe bloqueado
+    private float currentGuardHealth;
+    private float accumulatedBreakChance = 0f;
 
     [Header("Animación")]
     public Animator animator;
@@ -96,22 +103,44 @@ public class EnemyController : MonoBehaviour
                     SetAnimBlockSuccess();
                     timeSinceLastBlockedHit = 0f;
                     blockedHitCounter++;
+
+                    currentGuardHealth -= 1f;
+                    accumulatedBreakChance += guardBreakChancePerHit;
+                    float totalBreakChance = guardBreakChanceBase + accumulatedBreakChance;
+                    bool guardBroken = currentGuardHealth <= 0f || Random.value <= totalBreakChance;
+
+                    if (guardBroken)
+                    {
+                        if (blockCoroutine != null) StopCoroutine(blockCoroutine);
+                        SetAnimBlock(false);
+                        SetAnimHit();
+                        health.isBlocking = false;
+                        isBlocking = false;
+                        blockCoroutine = null;
+                        accumulatedBreakChance = 0f;
+                        return;
+                    }
+
                     if (blockedHitCounter >= hitsToCounterAttack)
                     {
                         blockedHitCounter = 0;
-                        ExecuteAttack();
+                        if (Random.value <= counterAttackChance)
+                            ExecuteAttack();
                     }
                     return;
                 }
 
-                SetAnimHit(); // reacción al daño
-
+                // ← ESTO FALTABA
+                SetAnimHit();
                 hitCounter++;
                 if (hitCounter >= hitsToBlock)
                 {
                     hitCounter = 0;
-                    if (blockCoroutine != null) StopCoroutine(blockCoroutine);
-                    blockCoroutine = StartCoroutine(BlockCoroutine());
+                    if (Random.value <= blockChance)
+                    {
+                        if (blockCoroutine != null) StopCoroutine(blockCoroutine);
+                        blockCoroutine = StartCoroutine(BlockCoroutine());
+                    }
                     return;
                 }
             }
@@ -309,6 +338,8 @@ public class EnemyController : MonoBehaviour
         health.isBlocking = true;
         blockedHitCounter = 0;
         timeSinceLastBlockedHit = 0f;
+        currentGuardHealth = guardHealth;   // <-- resetear guardia
+        accumulatedBreakChance = 0f;        // <-- resetear acumulado
 
         SetAnimBlock(true);
 

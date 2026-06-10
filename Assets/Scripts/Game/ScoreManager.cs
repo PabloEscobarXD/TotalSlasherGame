@@ -97,18 +97,18 @@ public class ScoreManager : MonoBehaviour
 
     private string GetGrade(int score)
     {
-        if (score >= 15000) return "S";
-        if (score >= 11000) return "A+";
-        if (score >= 9000) return "A";
-        if (score >= 7500) return "A-";
-        if (score >= 6000) return "B+";
-        if (score >= 4500) return "B";
-        if (score >= 3000) return "B-";
-        if (score >= 2000) return "C+";
-        if (score >= 1300) return "C";
-        if (score >= 800) return "C-";
-        if (score >= 400) return "D+";
-        if (score >= 150) return "D";
+        if (score >= 7000) return "S";   // alcanzable con 75% HP + buen combo
+        if (score >= 6000) return "A+";
+        if (score >= 5000) return "A";
+        if (score >= 4000) return "A-";
+        if (score >= 3200) return "B+";
+        if (score >= 2500) return "B";
+        if (score >= 1800) return "B-";
+        if (score >= 1200) return "C+";
+        if (score >= 800) return "C";
+        if (score >= 500) return "C-";
+        if (score >= 250) return "D+";
+        if (score >= 100) return "D";
         return "D-";
     }
 
