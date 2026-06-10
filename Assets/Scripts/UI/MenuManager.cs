@@ -27,11 +27,13 @@ public class MenuManager : MonoBehaviour
 
     public void startGame()
     {
+        Cursor.visible = false;
         AudioManager.GetOrCreate().PlaySFX("button_click");
         SceneManager.LoadScene("Nivel1");
     }
     public void backToMenu()
     {
+        Cursor.visible = false;
         AudioManager.GetOrCreate().PlaySFX("button_click");
         SceneManager.LoadScene("Menu");
     }

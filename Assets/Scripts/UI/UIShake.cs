@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UIShake : MonoBehaviour
@@ -100,5 +101,27 @@ public class UIShake : MonoBehaviour
             vignette.color.Override(originalVignetteColor);
 
         shakeCoroutine = null;
+    }
+
+    public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        elementsToShake.Clear();
+        originalPositions.Clear();
+
+        foreach (GameObject go in GameObject.FindGameObjectsWithTag("ShakeElement"))
+        {
+            RectTransform rt = go.GetComponent<RectTransform>();
+            if (rt != null)
+            {
+                elementsToShake.Add(rt);
+                originalPositions.Add(rt.anchoredPosition);
+            }
+        }
+
+        globalVolume = FindAnyObjectByType<Volume>();
+        if (globalVolume != null)
+            globalVolume.profile.TryGet(out vignette);
+        if (vignette != null)
+            originalVignetteColor = vignette.color.value;
     }
 }

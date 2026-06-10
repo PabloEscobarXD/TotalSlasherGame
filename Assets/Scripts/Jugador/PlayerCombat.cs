@@ -121,7 +121,6 @@ public class PlayerCombat : MonoBehaviour
             comboTimer += Time.deltaTime;
             if (comboTimer >= comboTimeLimit)
             {
-                ScoreManager.Instance?.RegisterCombo(comboCount);
                 comboCount = 0;
                 comboTimer = 0f;
                 isComboActive = false;
@@ -333,6 +332,11 @@ public class PlayerCombat : MonoBehaviour
 
             isCharging = true;
             chargeTimer = 0f;
+
+            chargeDirection = transform.forward; // fallback inmediato
+            if (movement != null && movement.WorldMoveDirection.sqrMagnitude > 0.01f)
+                chargeDirection = movement.WorldMoveDirection;
+
             animator.SetTrigger("areaChargeStart");
             chargeDirection = movement != null && movement.WorldMoveDirection.sqrMagnitude > 0.01f
                 ? movement.WorldMoveDirection
@@ -346,7 +350,7 @@ public class PlayerCombat : MonoBehaviour
         }
         else if (ctx.canceled)
         {
-            if (attackCancelled) 
+            if (attackCancelled)
             {
                 AudioManager.GetOrCreate().StopSFXCancellable();
                 attackCancelled = false;
@@ -362,6 +366,11 @@ public class PlayerCombat : MonoBehaviour
 
             AudioManager.GetOrCreate().StopSFXCancellable();
             AudioManager.GetOrCreate().PlaySFX("area_release");
+
+            // Garantizar dirección válida
+            if (chargeDirection.sqrMagnitude < 0.01f)
+                chargeDirection = transform.forward;
+
             rb.MoveRotation(Quaternion.LookRotation(chargeDirection));
             StartCoroutine(ExecuteAreaAttack(ratio, false, chargeDirection));
         }

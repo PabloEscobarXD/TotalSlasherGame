@@ -74,6 +74,7 @@ public class Damageable : MonoBehaviour
     private void Die()
     {
         Debug.Log($"{gameObject.name} ha muerto.");
+        ScoreManager.Instance?.RegisterKill();
         OnDeath?.Invoke();
         AudioManager.Instance.PlaySFX3D("enemy_death", transform.position);
         StartCoroutine(DestroyAfterDelay());

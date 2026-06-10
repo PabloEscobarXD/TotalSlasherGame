@@ -40,4 +40,12 @@ public class FilmGrainController : MonoBehaviour
             filmGrain.response.Override(0f);
         }
     }
+    public void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
+    {
+        globalVolume = FindAnyObjectByType<Volume>();
+        player = FindAnyObjectByType<PlayerDamageReceiver>();
+
+        if (globalVolume != null)
+            globalVolume.profile.TryGet(out filmGrain);
+    }
 }

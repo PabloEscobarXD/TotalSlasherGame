@@ -94,4 +94,27 @@ public class TargetingSystem : MonoBehaviour
             .OrderBy(h => Vector3.Distance(transform.position, h.transform.position))
             .First().transform;
     }
+
+    public Transform GetFarthestEnemyInDirection(Vector3 direction)
+    {
+        if (direction.sqrMagnitude < 0.01f)
+            direction = transform.forward;
+
+        Collider[] hits = Physics.OverlapSphere(transform.position, targetingRange, enemyLayer);
+        if (hits.Length == 0) return null;
+
+        var enemiesInCone = hits.Where(h =>
+        {
+            Vector3 dirToEnemy = (h.transform.position - transform.position).normalized;
+            float angle = Vector3.Angle(direction.normalized, dirToEnemy);
+            return angle <= coneAngle / 2f;
+        });
+
+        if (!enemiesInCone.Any()) return null;
+
+        // Más lejano en vez de más cercano
+        return enemiesInCone
+            .OrderByDescending(h => Vector3.Distance(transform.position, h.transform.position))
+            .First().transform;
+    }
 }

@@ -57,6 +57,7 @@ public class RoundManager : MonoBehaviour
     }
     private void Start()
     {
+        Cursor.visible = false;
         initialPlayerPosition = playerPrefab.transform.position;
         initialPlayerRotation = playerPrefab.transform.rotation;
 
@@ -97,15 +98,12 @@ public class RoundManager : MonoBehaviour
     private void TriggerVictory()
     {
         PlayerDamageReceiver player = FindAnyObjectByType<PlayerDamageReceiver>();
-        PlayerCombat combat = FindAnyObjectByType<PlayerCombat>();
 
         if (player != null)
             ScoreManager.Instance?.RegisterHP(player.currentHP, player.maxHP);
 
-        if (combat != null)
-            ScoreManager.Instance?.RegisterCombo(combat.comboCount); // combo activo al terminar
-
         ScoreManager.Instance?.CalculateScore();
+        Cursor.lockState = CursorLockMode.None;
         SceneManager.LoadScene("GameEnded");
     }
 

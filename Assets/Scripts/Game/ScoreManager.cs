@@ -6,13 +6,22 @@ public class ScoreManager : MonoBehaviour
 {
     public static ScoreManager Instance;
 
-    private List<int> combos = new List<int>(); // cada combo registrado
     private float finalHP;
     private float maxHP;
     public TMP_Text scoreText;
-
     public int FinalScore { get; private set; }
     public string FinalGrade { get; private set; }
+
+    [Header("Combo")]
+    public float comboTimeLimit = 5f;
+    private float comboMultiplier = 1f;
+    private float comboTimer = 0f;
+    private bool comboActive = false;
+    private int currentComboKills = 0;
+
+    [Header("Puntaje")]
+    public float scorePerKill = 100f;
+    private float totalScore = 0f;
 
     void Awake()
     {
@@ -20,25 +29,48 @@ public class ScoreManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
+
     void Update()
     {
+        if (comboActive)
+        {
+            comboTimer += Time.deltaTime;
+            if (comboTimer >= comboTimeLimit)
+                ResetCombo();
+        }
+
         if (scoreText != null)
-            scoreText.text = GetCurrentScore().ToString("N0");
+            scoreText.text = Mathf.RoundToInt(totalScore).ToString("N0");
     }
 
-    public int GetCurrentScore()
+    // Llamar cuando muere un enemigo
+    public void RegisterKill()
     {
-        float comboScore = 0f;
-        foreach (int combo in combos)
-            comboScore += Mathf.Pow(combo, 1.5f);
-        return Mathf.RoundToInt(comboScore);
+        if (!comboActive)
+            comboActive = true;
+
+        comboTimer = 0f; // resetear timer del combo
+        currentComboKills++;
+
+        // Aplicar puntaje con multiplicador actual
+        totalScore += scorePerKill * comboMultiplier;
+
+        // Incrementar multiplicador para el próximo kill
+        comboMultiplier += 0.1f;
     }
 
-    public void RegisterCombo(int hits)
+    public float GetCurrentMultiplier() => comboMultiplier;
+    public int GetCurrentComboKills() => currentComboKills;
+
+    private void ResetCombo()
     {
-        if (hits >= 2) // solo registrar combos reales
-            combos.Add(hits);
+        comboMultiplier = 1f;
+        comboTimer = 0f;
+        comboActive = false;
+        currentComboKills = 0;
     }
+
+    public int GetCurrentScore() => Mathf.RoundToInt(totalScore);
 
     public void RegisterHP(float current, float max)
     {
@@ -48,16 +80,9 @@ public class ScoreManager : MonoBehaviour
 
     public void CalculateScore()
     {
-        // Puntaje base: suma ponderada exponencial
-        float comboScore = 0f;
-        foreach (int combo in combos)
-            comboScore += Mathf.Pow(combo, 1.5f);
-
-        // Multiplicador de vida
         float hpRatio = maxHP > 0 ? finalHP / maxHP : 0f;
         float hpMultiplier = GetHPMultiplier(hpRatio);
-
-        FinalScore = Mathf.RoundToInt(comboScore * hpMultiplier);
+        FinalScore = Mathf.RoundToInt(totalScore * hpMultiplier);
         FinalGrade = GetGrade(FinalScore);
     }
 
@@ -72,27 +97,35 @@ public class ScoreManager : MonoBehaviour
 
     private string GetGrade(int score)
     {
-        if (score >= 2000) return "S";
-        if (score >= 1600) return "A+";
-        if (score >= 1300) return "A";
-        if (score >= 1100) return "A-";
-        if (score >= 900) return "B+";
-        if (score >= 750) return "B";
-        if (score >= 600) return "B-";
-        if (score >= 480) return "C+";
-        if (score >= 370) return "C";
-        if (score >= 270) return "C-";
-        if (score >= 190) return "D+";
-        if (score >= 120) return "D";
+        if (score >= 15000) return "S";
+        if (score >= 11000) return "A+";
+        if (score >= 9000) return "A";
+        if (score >= 7500) return "A-";
+        if (score >= 6000) return "B+";
+        if (score >= 4500) return "B";
+        if (score >= 3000) return "B-";
+        if (score >= 2000) return "C+";
+        if (score >= 1300) return "C";
+        if (score >= 800) return "C-";
+        if (score >= 400) return "D+";
+        if (score >= 150) return "D";
         return "D-";
     }
 
     public void ResetScore()
     {
-        combos.Clear();
+        totalScore = 0f;
         finalHP = 0;
         maxHP = 0;
         FinalScore = 0;
         FinalGrade = "";
+        ResetCombo();
+    }
+
+    public void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
+    {
+        GameObject scoreObj = GameObject.FindGameObjectWithTag("ScoreText");
+        if (scoreObj != null)
+            scoreText = scoreObj.GetComponent<TMP_Text>();
     }
 }

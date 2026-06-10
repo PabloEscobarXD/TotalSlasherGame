@@ -2,6 +2,7 @@
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using System.Security.Cryptography;
 
 public class PauseManager : MonoBehaviour
 {
@@ -46,7 +47,7 @@ public class PauseManager : MonoBehaviour
         if (isPaused)
         {
             Time.timeScale = 0f;
-
+            Cursor.lockState = CursorLockMode.None;
             // Cambiar controles a UI
             playerInput.SwitchCurrentActionMap("UI");
 
@@ -55,7 +56,7 @@ public class PauseManager : MonoBehaviour
         else
         {
             Time.timeScale = 1f;
-
+            Cursor.lockState = CursorLockMode.Locked;
             // Volver al Action Map Gameplay
             playerInput.SwitchCurrentActionMap("Player");
         }
@@ -96,6 +97,11 @@ public class PauseManager : MonoBehaviour
 
         // Restablecer Action Map
         playerInput.SwitchCurrentActionMap("Player");
+    }
+
+    public void restartGame()
+    {
+        SceneManager.LoadScene("Nivel1");
     }
 
     public void OnPause(InputAction.CallbackContext ctx)

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerDamageReceiver : MonoBehaviour
@@ -26,14 +27,28 @@ public class PlayerDamageReceiver : MonoBehaviour
     public bool isUntouchable = false; // durante tornado
 
     private UIShake uiShake;
+    private GameObject pauseManagerObject;
+    private PauseManager pauseManager;
+    public UnityEngine.UI.Button firstButton;
+
+    public GameObject loseCanvas;
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         combat = GetComponent<PlayerCombat>();
         movement = GetComponent<PlayerMovement>();
         currentHP = maxHP;
-
         uiShake = FindAnyObjectByType<UIShake>();
+        pauseManagerObject = GameObject.Find("PauseManager");
+
+        if (loseCanvas != null)
+            loseCanvas.SetActive(false); // asegurar que empieza desactivado
+    }
+
+    void Update()
+    {
+        if (Keyboard.current.digit0Key.wasPressedThisFrame)
+            Die();
     }
 
     // -------------------------------------------
@@ -114,8 +129,36 @@ public class PlayerDamageReceiver : MonoBehaviour
     // -------------------------------------------
     void Die()
     {
-        Debug.Log("PLAYER MUERTO");
-        SceneManager.LoadScene("Nivel1");
-        // Aquí puedes agregar animación death, respawn, etc.
+        // Detener todos los enemigos
+        EnemyController[] enemies = FindObjectsByType<EnemyController>(FindObjectsSortMode.None);
+        foreach (EnemyController enemy in enemies)
+            enemy.enabled = false;
+
+        if (pauseManagerObject != null)
+            pauseManagerObject.SetActive(false);
+
+        if (loseCanvas != null)
+            loseCanvas.SetActive(true);
+
+        if (combat != null)
+            combat.enabled = false;
+
+        if (movement != null)
+            movement.enabled = false;
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        AudioManager.GetOrCreate().StopMusic();
+
+        // Seleccionar primer botón para el mando
+        PlayerInput playerInput = GetComponent<PlayerInput>();
+        playerInput?.SwitchCurrentActionMap("UI");
+
+        if (firstButton != null)
+        {
+            UnityEngine.EventSystems.EventSystem.current?.SetSelectedGameObject(null);
+            UnityEngine.EventSystems.EventSystem.current?.SetSelectedGameObject(firstButton.gameObject);
+        }
     }
 }
