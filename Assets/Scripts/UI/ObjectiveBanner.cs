@@ -39,7 +39,7 @@ public class ObjectiveBanner : MonoBehaviour
 
         float bannerWidth = banner.rect.width;
         float centerX = -bannerWidth / 2f + 500f;
-        float exitX = canvasWidth / 2f + bannerWidth;
+        float exitX = canvasWidth + bannerWidth;
 
         Vector2 startPos = new Vector2(-canvasWidth / 2f - bannerWidth, banner.anchoredPosition.y);
         banner.anchoredPosition = startPos;
@@ -74,6 +74,13 @@ public class ObjectiveBanner : MonoBehaviour
     public void Play(string text)
     {
         message.text = text;
+        // Reposicionar ANTES de activar para evitar el flash
+        Canvas parentCanvas = GetComponentInParent<Canvas>();
+        RectTransform canvasRT = parentCanvas.GetComponent<RectTransform>();
+        float w = canvasRT.rect.width;
+        float bw = banner.rect.width;
+        banner.anchoredPosition = new Vector2(-w / 2f - bw, banner.anchoredPosition.y);
+
         gameObject.SetActive(true);
         StartCoroutine(PlayBannerAnimation());
     }

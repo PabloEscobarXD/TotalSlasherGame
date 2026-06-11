@@ -4,6 +4,9 @@ using static Damageable;
 
 public class Projectile : MonoBehaviour
 {
+    [Header("Colisión")]
+    public LayerMask hitLayers;
+
     public float speed = 30f;
     public float damage = 15f;
     public float lifetime = 5f;
@@ -25,13 +28,11 @@ public class Projectile : MonoBehaviour
     void Update()
     {
         float moveDist = speed * Time.deltaTime;
-
-        if (Physics.Raycast(transform.position, direction, out RaycastHit hit, moveDist + 0.1f))
+        if (Physics.Raycast(transform.position, direction, out RaycastHit hit, moveDist + 0.1f, hitLayers))
         {
             HandleHit(hit.collider);
             return;
         }
-
         transform.position += direction * moveDist;
     }
 
@@ -56,7 +57,7 @@ public class Projectile : MonoBehaviour
         PlayerDamageReceiver player = other.GetComponentInParent<PlayerDamageReceiver>();
         if (player != null)
         {
-            player.TakeDamage(transform.position);
+            player.TakeDamage(transform.position, 7f);
             Destroy(gameObject);
             return;
         }

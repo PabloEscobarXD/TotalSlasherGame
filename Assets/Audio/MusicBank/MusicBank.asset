@@ -14,7 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sounds:
   - id: music1
-    clip: {fileID: 8300000, guid: 238f6cc0c4cb20142a186e98c3fa462a, type: 3}
+    clip: {fileID: 8300000, guid: 2da6dd5b934fdcc49b39c8403a3345e3, type: 3}
+    volume: 0.5
+    pitch: 1
+    minInterval: 0.1
+  - id: menu
+    clip: {fileID: 8300000, guid: 37e02f435497bec4cbe385e985e34ca4, type: 3}
+    volume: 0.5
+    pitch: 1
+    minInterval: 0.1
+  - id: pause
+    clip: {fileID: 8300000, guid: 2703671a9b784e54d9f9fede67fb4c5c, type: 3}
     volume: 0.5
     pitch: 1
     minInterval: 0.1

@@ -32,7 +32,7 @@ public class HurtCube : MonoBehaviour
 
         if (receiver != null)
         {
-            receiver.TakeDamage(transform.position);
+            //receiver.TakeDamage(transform.position);
         }
     }
 

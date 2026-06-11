@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
 
@@ -28,6 +28,11 @@ public class ScoreManager : MonoBehaviour
         if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+    void OnDestroy()
+    {
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     void Update()
@@ -55,7 +60,7 @@ public class ScoreManager : MonoBehaviour
         // Aplicar puntaje con multiplicador actual
         totalScore += scorePerKill * comboMultiplier;
 
-        // Incrementar multiplicador para el pr�ximo kill
+        // Incrementar multiplicador para el próximo kill
         comboMultiplier += 0.1f;
     }
 
@@ -86,7 +91,7 @@ public class ScoreManager : MonoBehaviour
         FinalGrade = GetGrade(FinalScore);
     }
 
-    private float GetHPMultiplier(float ratio)
+    public float GetHPMultiplier(float ratio)
     {
         if (ratio >= 1.00f) return 1.40f;
         if (ratio >= 0.75f) return 1.25f;
@@ -124,8 +129,14 @@ public class ScoreManager : MonoBehaviour
 
     public void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
     {
+        // Resetear score al entrar a la escena de juego
+        if (scene.name == "Nivel1")
+            ResetScore();
+
         GameObject scoreObj = GameObject.FindGameObjectWithTag("ScoreText");
         if (scoreObj != null)
             scoreText = scoreObj.GetComponent<TMP_Text>();
     }
+
+    public float GetHPRatio() => maxHP > 0 ? finalHP / maxHP : 0f;
 }

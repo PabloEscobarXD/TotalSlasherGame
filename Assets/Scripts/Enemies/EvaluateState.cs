@@ -13,7 +13,6 @@ public class EvaluateState : EnemyState
     public override void Enter()
     {
         timer = 0f;
-        Debug.Log("Cone-head: Evaluando");
     }
 
     public override void Update()

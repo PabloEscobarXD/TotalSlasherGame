@@ -28,3 +28,23 @@ MonoBehaviour:
     volume: 0.91
     pitch: 1
     minInterval: 0.1
+  - id: gradeReveal
+    clip: {fileID: 8300000, guid: 858c28df85a371e4ea4bee422b68ebad, type: 3}
+    volume: 1
+    pitch: 1
+    minInterval: 0.1
+  - id: bonusReveal
+    clip: {fileID: 8300000, guid: 13b50b1f42735054bb1d1c9685dbb53f, type: 3}
+    volume: 1
+    pitch: 1
+    minInterval: 0.1
+  - id: scoreCounting
+    clip: {fileID: 8300000, guid: 9953d8c302d0341439a763328ac70bd6, type: 3}
+    volume: 0.66
+    pitch: 1.5
+    minInterval: 0.1
+  - id: victory
+    clip: {fileID: 8300000, guid: 9129b7ed265146442a26b1f957afcc3a, type: 3}
+    volume: 0.6
+    pitch: 1
+    minInterval: 0.1

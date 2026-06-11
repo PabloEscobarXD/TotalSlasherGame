@@ -259,8 +259,12 @@ public class PlayerCombat : MonoBehaviour
         {
             Damageable dmg = currentTarget.GetComponent<Damageable>();
             if (dmg != null)
+            {
                 dmg.TakeDamage(dashDamage, transform.position, "Player", AttackType.Normal);
-            fury.AddFury();
+                EnemyController ec = currentTarget.GetComponent<EnemyController>();
+                if (ec == null || !ec.isBlocking) // ← solo si no bloquea
+                    fury.AddFury();
+            }
         }
     }
 
@@ -269,19 +273,30 @@ public class PlayerCombat : MonoBehaviour
         isDashing = true;
         isFuryDashing = true;
 
+        animator.SetTrigger("furySingleAttack");
+        animator.SetBool("furySingleHold", true);
+
         int playerLayer = gameObject.layer;
         int enemyLayer = LayerMask.NameToLayer("Enemy");
         Physics.IgnoreLayerCollision(playerLayer, enemyLayer, true);
 
-        Vector3 dashDir = transform.forward;
+        // Dirección al enemigo más lejano sin límite de rango
+        Transform farthest = targeting.GetFarthestEnemy();
+        Vector3 dashDir = farthest != null
+            ? (farthest.position - transform.position).normalized
+            : transform.forward;
+        dashDir.y = 0;
+
         float elapsed = 0f;
         HashSet<Damageable> alreadyHit = new HashSet<Damageable>();
-
         AudioManager.Instance.PlaySFX("furySingleAttack");
 
         while (elapsed < furyLineDashDuration)
         {
             rb.linearVelocity = dashDir * furyLineDashSpeed;
+
+            if (dashDir != Vector3.zero)
+                rb.MoveRotation(Quaternion.Slerp(rb.rotation, Quaternion.LookRotation(dashDir), 0.3f));
 
             Collider[] hits = Physics.OverlapCapsule(
                 transform.position,
@@ -297,6 +312,10 @@ public class PlayerCombat : MonoBehaviour
                 {
                     alreadyHit.Add(dmg);
                     dmg.TakeDamage(furyLineDashDamage, transform.position, "Player", AttackType.Normal);
+
+                    // Si es el target, detener el dash
+                    if (farthest != null && col.transform == farthest)
+                        goto EndDash;
                 }
             }
 
@@ -304,10 +323,13 @@ public class PlayerCombat : MonoBehaviour
             yield return null;
         }
 
+    EndDash:
+        animator.SetBool("furySingleHold", false);
         rb.linearVelocity = Vector3.zero;
         Physics.IgnoreLayerCollision(playerLayer, enemyLayer, false);
         isDashing = false;
         isFuryDashing = false;
+        playerInput.actions["Move"].Enable();
     }
 
     // ---------------- Ataque en Área ----------------
@@ -398,8 +420,10 @@ public class PlayerCombat : MonoBehaviour
                 if (dmg != null && !alreadyHit.Contains(dmg))
                 {
                     alreadyHit.Add(dmg);
+                    EnemyController ec = col.GetComponent<EnemyController>();
                     dmg.TakeDamage(damage, transform.position, "Player", AttackType.Normal);
-                    fury.AddFury();
+                    if (ec == null || !ec.isBlocking) // ← solo si no bloquea
+                        fury.AddFury();
                     hitCount++;
                 }
             }
@@ -422,6 +446,8 @@ public class PlayerCombat : MonoBehaviour
     {
         isDashing = true;
         isFuryDashing = true;
+
+        animator.SetTrigger("furyAreaAttack");
 
         Vector3 dashDir = lastStickDirection.sqrMagnitude > 0.01f
             ? lastStickDirection

@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 public class UIShake : MonoBehaviour
 {
-    [Header("Configuraci�n")]
+    [Header("Configuración")]
     public List<RectTransform> elementsToShake = new List<RectTransform>();
     public float speed = 40f;
     public float amount = 8f;
@@ -29,7 +29,7 @@ public class UIShake : MonoBehaviour
         if (elementsToShake.Count == 0 || elementsToShake[0] == null)
         {
             elementsToShake.Clear();
-            // Buscar por tag � asign� el tag "ShakeElement" a los objetos en la escena
+            // Buscar por tag — asigná el tag "ShakeElement" a los objetos en la escena
             foreach (GameObject go in GameObject.FindGameObjectsWithTag("ShakeElement"))
             {
                 RectTransform rt = go.GetComponent<RectTransform>();
@@ -48,8 +48,10 @@ public class UIShake : MonoBehaviour
     }
     void Start()
     {
+        originalPositions.Clear(); // ← agregar esto
         foreach (RectTransform rt in elementsToShake)
-            originalPositions.Add(rt.anchoredPosition);
+            if (rt != null) // ← agregar null check
+                originalPositions.Add(rt.anchoredPosition);
 
         if (globalVolume != null)
             globalVolume.profile.TryGet(out vignette);

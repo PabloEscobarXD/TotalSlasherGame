@@ -34,6 +34,7 @@ public class FuryUI : MonoBehaviour
     {
         fury = FindAnyObjectByType<FurySystem>();
         furyBarFill = GameObject.FindGameObjectWithTag("FuryFill")?.GetComponent<Image>();
+        globalVolume = FindAnyObjectByType<Volume>();
 
         if (globalVolume != null)
             globalVolume.profile.TryGet(out vignette);

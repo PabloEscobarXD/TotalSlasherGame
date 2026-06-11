@@ -1,4 +1,4 @@
-using UnityEngine;
+Ôªøusing UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
@@ -16,14 +16,14 @@ public class RoundManager : MonoBehaviour
     private Vector3 initialPlayerPosition;
     private Quaternion initialPlayerRotation;
 
-    [Header("ConfiguraciÛn de rondas")]
+    [Header("Configuraci√≥n de rondas")]
     public float timeBetweenRounds = 3f;
 
-    [Header("Cinem·tica")]
+    [Header("Cinem√°tica")]
     public CameraFollow cameraFollow;
     public ObjectiveBanner objectiveBanner;
-    public float cinematicDuration = 3f;  // cu·nto tiempo muestra la oleada
-    public float returnDuration = 1.5f;   // cu·nto tarda en volver al jugador
+    public float cinematicDuration = 3f;  // cu√°nto tiempo muestra la oleada
+    public float returnDuration = 1.5f;   // cu√°nto tarda en volver al jugador
 
     private PlayerMovement playerMovement;
     private PlayerCombat playerCombat;
@@ -66,7 +66,9 @@ public class RoundManager : MonoBehaviour
         playerMovement = playerPrefab.GetComponent<PlayerMovement>();
         playerCombat = playerPrefab.GetComponent<PlayerCombat>();
 
-        SetPlayerInputEnabled(false); // bloquear antes de la primera cinem·tica
+        AudioManager.GetOrCreate().PlayMusic("music1");
+
+        SetPlayerInputEnabled(false); // bloquear antes de la primera cinem√°tica
         StartRound(1);
     }
 
@@ -100,12 +102,35 @@ public class RoundManager : MonoBehaviour
     private void TriggerVictory()
     {
         PlayerDamageReceiver player = FindAnyObjectByType<PlayerDamageReceiver>();
-
         if (player != null)
             ScoreManager.Instance?.RegisterHP(player.currentHP, player.maxHP);
-
         ScoreManager.Instance?.CalculateScore();
+
+        StartCoroutine(VictoryTransition());
+    }
+
+    private IEnumerator VictoryTransition()
+    {
+        // Congelar enemigos
+        foreach (EnemyController enemy in FindObjectsByType<EnemyController>(FindObjectsSortMode.None))
+            enemy.enabled = false;
+
+        SetPlayerInputEnabled(false);
+
+        // C√°mara lenta
+        Time.timeScale = 0.3f;
+        Time.fixedDeltaTime = 0.02f * Time.timeScale;
+
+        AudioManager.GetOrCreate().StopMusic();
+        AudioManager.GetOrCreate().PlaySFX("victory"); // ‚Üê tu sonido de victoria
+
+        yield return new WaitForSecondsRealtime(2.5f);  // duraci√≥n de la c√°mara lenta
+
+        // Restaurar tiempo antes de cambiar escena
+        Time.timeScale = 1f;
+        Time.fixedDeltaTime = 0.02f;
         Cursor.lockState = CursorLockMode.None;
+        
         SceneManager.LoadScene("GameEnded");
     }
 
@@ -122,7 +147,7 @@ public class RoundManager : MonoBehaviour
     {
         waitingForNextRound = true;
 
-        int nextIndex = currentRound; // currentRound es 1-based, asÌ que currentRound == nextIndex en 0-based
+        int nextIndex = currentRound; // currentRound es 1-based, as√≠ que currentRound == nextIndex en 0-based
 
         if (nextIndex >= rounds.Length)
         {
@@ -131,8 +156,8 @@ public class RoundManager : MonoBehaviour
         }
         AudioManager.GetOrCreate().PlaySFX("roundClear");
         yield return new WaitForSeconds(timeBetweenRounds);
-        // Teletransportar jugador a posiciÛn inicial ANTES de que la c·mara llegue
-        Debug.Log($"Teletransportando a: {initialPlayerPosition}, posiciÛn actual: {playerPrefab.transform.position}");
+        // Teletransportar jugador a posici√≥n inicial ANTES de que la c√°mara llegue
+        Debug.Log($"Teletransportando a: {initialPlayerPosition}, posici√≥n actual: {playerPrefab.transform.position}");
         playerPrefab.transform.position = initialPlayerPosition;
         playerPrefab.transform.rotation = initialPlayerRotation;
 
@@ -141,7 +166,7 @@ public class RoundManager : MonoBehaviour
         {
             playerRb.linearVelocity = Vector3.zero;
             playerRb.angularVelocity = Vector3.zero;
-            playerRb.position = initialPlayerPosition; // forzar tambiÈn por fÌsica
+            playerRb.position = initialPlayerPosition; // forzar tambi√©n por f√≠sica
         }
 
         
@@ -195,7 +220,7 @@ public class RoundManager : MonoBehaviour
             waveCenter += e.transform.position;
         waveCenter /= enemies.Length;
 
-        // 3. Paneo cinem·tico hacia la oleada
+        // 3. Paneo cinem√°tico hacia la oleada
         cameraFollow?.StartCinematic(waveCenter, cinematicDuration);
         yield return new WaitForSeconds(cinematicDuration);
 
@@ -223,7 +248,7 @@ public class RoundManager : MonoBehaviour
         foreach (EnemyController controller in enemies)
             controller.enabled = true;
 
-        Debug.Log($"Ronda {index + 1} iniciada ó {enemies.Length} enemigos ({rangedCount} ranged)");
+        Debug.Log($"Ronda {index + 1} iniciada ‚Äî {enemies.Length} enemigos ({rangedCount} ranged)");
         isSpawning = false;
     }
     private void ClearEnemies()

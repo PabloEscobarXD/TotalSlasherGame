@@ -282,7 +282,7 @@ public class EnemyController : MonoBehaviour
             if (distToPlayer <= stopDistance + 1.2f)
             {
                 PlayerDamageReceiver receiver = player.GetComponent<PlayerDamageReceiver>();
-                receiver?.TakeDamage(transform.position);
+                receiver?.TakeDamage(transform.position, 10f);
             }
         }
     }

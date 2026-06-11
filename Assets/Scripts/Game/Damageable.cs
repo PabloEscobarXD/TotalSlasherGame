@@ -80,6 +80,14 @@ public class Damageable : MonoBehaviour
         StartCoroutine(DestroyAfterDelay());
     }
 
+    public void KillSilently()
+    {
+        // Muere sin sumar score ni combo
+        OnDeath?.Invoke();
+        AudioManager.Instance.PlaySFX3D("enemy_death", transform.position);
+        StartCoroutine(DestroyAfterDelay());
+    }
+
     private IEnumerator DestroyAfterDelay()
     {
         yield return new WaitForSeconds(0f); // tiempo para que se vea la muerte

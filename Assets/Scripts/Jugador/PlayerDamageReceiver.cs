@@ -43,6 +43,8 @@ public class PlayerDamageReceiver : MonoBehaviour
 
         if (loseCanvas != null)
             loseCanvas.SetActive(false); // asegurar que empieza desactivado
+
+        rb.isKinematic = false;
     }
 
     void Update()
@@ -54,7 +56,7 @@ public class PlayerDamageReceiver : MonoBehaviour
     // -------------------------------------------
     // El enemigo llama a esta función
     // -------------------------------------------
-    public void TakeDamage(Vector3 hitSourcePosition)
+    public void TakeDamage(Vector3 hitSourcePosition, float overrideDamage)
     {
         if (combat != null && combat.blockBox.activeSelf)
         {
@@ -63,7 +65,7 @@ public class PlayerDamageReceiver : MonoBehaviour
         }
         if (isStunned) return;
 
-        ApplyHealthReduction(damage);
+        ApplyHealthReduction(overrideDamage);
 
         if (uiShake == null)
             uiShake = FindAnyObjectByType<UIShake>();
@@ -160,5 +162,7 @@ public class PlayerDamageReceiver : MonoBehaviour
             UnityEngine.EventSystems.EventSystem.current?.SetSelectedGameObject(null);
             UnityEngine.EventSystems.EventSystem.current?.SetSelectedGameObject(firstButton.gameObject);
         }
+
+        rb.isKinematic = true;
     }
 }

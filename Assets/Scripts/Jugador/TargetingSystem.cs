@@ -116,4 +116,21 @@ public class TargetingSystem : MonoBehaviour
             .OrderByDescending(h => Vector3.Distance(transform.position, h.transform.position))
             .First().transform;
     }
+    // En TargetingSystem, agregar:
+    public Transform GetFarthestEnemy()
+    {
+        Collider[] cols = Physics.OverlapSphere(transform.position, Mathf.Infinity, enemyLayer);
+        Transform farthest = null;
+        float maxDist = 0f;
+        foreach (Collider col in cols)
+        {
+            float dist = Vector3.Distance(transform.position, col.transform.position);
+            if (dist > maxDist)
+            {
+                maxDist = dist;
+                farthest = col.transform;
+            }
+        }
+        return farthest;
+    }
 }

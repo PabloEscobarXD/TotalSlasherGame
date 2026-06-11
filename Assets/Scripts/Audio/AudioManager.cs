@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Unity.VisualScripting;
@@ -66,7 +66,7 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    // -------------------- M�sica --------------------
+    // -------------------- Música --------------------
 
     public void PlayMusic(string id)
     {
@@ -112,6 +112,10 @@ public class AudioManager : MonoBehaviour
         {
             musicSource.volume = value;
         }
+
+        if (sfxCancellableSource.isPlaying && sfxCancellableSource.loop)
+            sfxCancellableSource.volume = musicVolume;
+
         PlayerPrefs.SetFloat("MusicVolume", value);
     }
 
@@ -169,5 +173,21 @@ public class AudioManager : MonoBehaviour
     {
         if (Instance != null) return Instance;
         return new GameObject("AudioManager").AddComponent<AudioManager>();
+    }
+
+    public void PlayMusicOverlay(string id)
+    {
+        if (!cache.TryGetValue(id, out var entry)) return;
+        sfxCancellableSource.pitch = 1f; // ← resetear pitch antes de reproducir
+        sfxCancellableSource.clip = entry.clip;
+        sfxCancellableSource.loop = true;
+        sfxCancellableSource.volume = musicVolume * entry.volume;
+        sfxCancellableSource.Play();
+    }
+
+    public void StopMusicOverlay()
+    {
+        sfxCancellableSource.loop = false;
+        sfxCancellableSource.Stop();
     }
 }
