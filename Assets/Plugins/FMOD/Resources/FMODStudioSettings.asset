@@ -307,8 +307,8 @@ MonoBehaviour:
   switchSettingsMigration: 1
   HasSourceProject: 1
   HasPlatforms: 1
-  sourceProjectPath: 
-  sourceBankPath: 
+  sourceProjectPath: Assets/Audio/ProyectoFMOD/memoria.fspro
+  sourceBankPath: Assets/Audio/ProyectoFMOD/Build
   sourceBankPathUnformatted: 
   BankRefreshCooldown: 5
   ShowBankRefreshWindow: 1
@@ -343,7 +343,7 @@ MonoBehaviour:
   EnableErrorCallback: 0
   SharedLibraryUpdateStage: 0
   SharedLibraryTimeSinceStart: 0
-  CurrentVersion: 131858
+  CurrentVersion: 131859
   HideSetupWizard: 1
   LastEventReferenceScanVersion: 131858
   Platforms:
