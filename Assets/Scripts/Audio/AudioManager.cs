@@ -71,7 +71,10 @@ public class AudioManager : MonoBehaviour
     public void PlayMusic(string id)
     {
         if (!cache.TryGetValue(id, out var entry)) return;
-        if (musicSource.clip == entry.clip) return;
+
+        // ← CAMBIO: también reproducir si está detenida aunque sea el mismo clip
+        if (musicSource.clip == entry.clip && musicSource.isPlaying) return;
+
         musicSource.clip = entry.clip;
         musicSource.volume = musicVolume * entry.volume;
         musicSource.Play();

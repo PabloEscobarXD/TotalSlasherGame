@@ -19,17 +19,19 @@ public class PlayerCombat : MonoBehaviour
     [Header("Dash Lineal de Furia")]
     public float furyLineDashSpeed = 60f;
     public float furyLineDashDuration = 0.3f;
-    public float furyLineDashDamage = 35f;
-    public float furyLineDashWidth = 1.5f;
+    public float furyLineDashDamage = 35f;   // ya no se usa, podés quitarla
+    public float furyLineDashWidth = 1.5f;   // ya no se usa, podés quitarla
+    public float furyDashFuryConsume = 0.2f; // ← NUEVO: cuánta furia consume
     public bool isFuryDashing = false;
 
     [Header("Ataque en área")]
     public float areaDashSpeed = 80f;
     public float areaDashDuration = 0.095f;
     public float maxChargeTime = 1.5f;
-    public float minChargeTime = 0.4f;
+    public float minChargeTime = 0.7f;
     public float areaBurstMaxRadius = 5f;
     public float areaCooldown = 0.5f;
+    public float minChargeToCancel = 0.2f;
     private bool canAreaAttack = true;
 
     [Header("Ataque en área con furia")]
@@ -38,6 +40,7 @@ public class PlayerCombat : MonoBehaviour
     public float furyAreaDashDamage = 40f;
     public float furyAreaDashRadius = 5f;
     public int furyAreaMaxHits = 5;
+    private bool pendingAreaRelease = false;
 
     [Header("Tornado de Furia")]
     public float tornadoRadius = 4f;
@@ -120,6 +123,12 @@ public class PlayerCombat : MonoBehaviour
             }
         }
 
+        if (isCharging && pendingAreaRelease && chargeTimer >= minChargeTime)
+        {
+            pendingAreaRelease = false;
+            ReleaseAreaAttack();
+        }
+
         if (ScoreManager.Instance != null && ScoreManager.Instance.GetCurrentComboKills() > 1)
         {
             comboGroup.SetActive(true);
@@ -139,20 +148,28 @@ public class PlayerCombat : MonoBehaviour
             if (isTornado || isFuryDashing) return;
 
             if (isDashing || isCharging)
-                CancelAreaAttack();
+                CancelAreaAttack(force: true);
 
             StopAllCoroutines();
             playerInput.actions["Move"].Enable();
             rb.linearVelocity = Vector3.zero;
             isDashing = false;
             isCharging = false;
+            pendingAreaRelease = false;
+            attackCancelled = false;
             canDirectedAttack = true;
             canAreaAttack = true;
             swordHitbox.gameObject.SetActive(false);
 
+            // ← NUEVO: restaurar colisiones siempre, por si ExecuteAreaAttack fue interrumpido
             int playerLayer = gameObject.layer;
             int enemyLayer = LayerMask.NameToLayer("Enemy");
             Physics.IgnoreLayerCollision(playerLayer, enemyLayer, false);
+
+            // ← NUEVO: limpiar animaciones de área por si se interrumpió el release
+            animator.SetBool("areaChargeHold", false);
+            animator.ResetTrigger("areaAttackSweep");
+            animator.ResetTrigger("areaChargeStart");
 
             Transform nearest = targeting.GetNearestEnemy();
             if (nearest != null)
@@ -165,6 +182,9 @@ public class PlayerCombat : MonoBehaviour
 
             animator.SetBool("blockHold", true);
             blockBox.SetActive(true);
+
+            // ← NUEVO: detener audio de carga si estaba sonando
+            AudioManager.GetOrCreate().StopSFXCancellable();
         }
         else if (ctx.canceled)
         {
@@ -189,17 +209,13 @@ public class PlayerCombat : MonoBehaviour
     {
         playerInput.actions["Move"].Disable();
         StartCoroutine(DirectedAttackCooldown());
-        bool furyAttack = fury.IsFuryReady();
 
-        if (furyAttack)
-        {
-            fury.TriggerSlowmo();
-            fury.ConsumeFuryPartial(0.5f);
-        }
+        bool furyAttack = fury.furyModeActive && fury.CanFuryDash(furyDashFuryConsume);
+
+        // ← QUITAMOS fury.TriggerSlowmo() y fury.ConsumeFuryPartial() de aquí
 
         Vector3 attackDir = movement != null ? movement.WorldMoveDirection : transform.forward;
 
-        // Furia: enemigo más lejano. Normal: enemigo más cercano
         if (furyAttack)
             currentTarget = targeting.GetFarthestEnemyInDirection(attackDir);
         else
@@ -252,6 +268,13 @@ public class PlayerCombat : MonoBehaviour
         }
 
         rb.linearVelocity = Vector3.zero;
+
+        // ← NUEVO: esperar el mínimo de tiempo antes de aplicar daño
+        // cubre el caso de estar pegado al enemigo donde el while termina inmediato
+        float minDamageDelay = 0.2f; // ajustar según la animación
+        if (elapsed < minDamageDelay)
+            yield return new WaitForSeconds(minDamageDelay - elapsed);
+
         isDashing = false;
         playerInput.actions["Move"].Enable();
 
@@ -262,8 +285,11 @@ public class PlayerCombat : MonoBehaviour
             {
                 dmg.TakeDamage(dashDamage, transform.position, "Player", AttackType.Normal);
                 EnemyController ec = currentTarget.GetComponent<EnemyController>();
-                if (ec == null || !ec.isBlocking) // ← solo si no bloquea
+                if (ec == null || !ec.isBlocking)
+                {
                     fury.AddFury();
+                    fury.AddFury();
+                }
             }
         }
     }
@@ -273,22 +299,27 @@ public class PlayerCombat : MonoBehaviour
         isDashing = true;
         isFuryDashing = true;
 
+        // Consume furia parcial en lugar de toda
+        fury.ConsumeFuryPartial(furyDashFuryConsume);
+
         animator.SetTrigger("furySingleAttack");
         animator.SetBool("furySingleHold", true);
+
+        // Dirección: stick del jugador, no hacia el enemigo más lejano
+        Vector3 dashDir = lastStickDirection.sqrMagnitude > 0.01f
+            ? lastStickDirection
+            : transform.forward;
+        dashDir.y = 0;
 
         int playerLayer = gameObject.layer;
         int enemyLayer = LayerMask.NameToLayer("Enemy");
         Physics.IgnoreLayerCollision(playerLayer, enemyLayer, true);
 
-        // Dirección al enemigo más lejano sin límite de rango
-        Transform farthest = targeting.GetFarthestEnemy();
-        Vector3 dashDir = farthest != null
-            ? (farthest.position - transform.position).normalized
-            : transform.forward;
-        dashDir.y = 0;
+        // Invulnerabilidad durante el dash
+        PlayerDamageReceiver damageReceiver = GetComponent<PlayerDamageReceiver>();
+        if (damageReceiver != null) damageReceiver.isUntouchable = true;
 
         float elapsed = 0f;
-        HashSet<Damageable> alreadyHit = new HashSet<Damageable>();
         AudioManager.Instance.PlaySFX("furySingleAttack");
 
         while (elapsed < furyLineDashDuration)
@@ -298,35 +329,18 @@ public class PlayerCombat : MonoBehaviour
             if (dashDir != Vector3.zero)
                 rb.MoveRotation(Quaternion.Slerp(rb.rotation, Quaternion.LookRotation(dashDir), 0.3f));
 
-            Collider[] hits = Physics.OverlapCapsule(
-                transform.position,
-                transform.position + dashDir * 1.5f,
-                furyLineDashWidth,
-                targeting.enemyLayer
-            );
-
-            foreach (Collider col in hits)
-            {
-                Damageable dmg = col.GetComponent<Damageable>();
-                if (dmg != null && !alreadyHit.Contains(dmg))
-                {
-                    alreadyHit.Add(dmg);
-                    dmg.TakeDamage(furyLineDashDamage, transform.position, "Player", AttackType.Normal);
-
-                    // Si es el target, detener el dash
-                    if (farthest != null && col.transform == farthest)
-                        goto EndDash;
-                }
-            }
-
             elapsed += Time.deltaTime;
             yield return null;
         }
 
-    EndDash:
+        // ← Sin EndDash ni detección de enemigos
+
         animator.SetBool("furySingleHold", false);
         rb.linearVelocity = Vector3.zero;
         Physics.IgnoreLayerCollision(playerLayer, enemyLayer, false);
+
+        if (damageReceiver != null) damageReceiver.isUntouchable = false; // ← quitar invulnerabilidad
+
         isDashing = false;
         isFuryDashing = false;
         playerInput.actions["Move"].Enable();
@@ -369,21 +383,33 @@ public class PlayerCombat : MonoBehaviour
             }
             if (!isCharging) return;
 
-            isCharging = false;
-            animator.SetBool("areaChargeHold", false);
+            // ← CAMBIO: en vez de ejecutar directo, marcamos pending
+            if (chargeTimer < minChargeTime)
+            {
+                pendingAreaRelease = true; // esperar a que pase el mínimo
+                return;
+            }
 
-            float ratio = Mathf.Clamp01(chargeTimer / maxChargeTime);
-            animator.SetTrigger("areaAttackSweep");
-
-            AudioManager.GetOrCreate().StopSFXCancellable();
-            AudioManager.GetOrCreate().PlaySFX("area_release");
-
-            if (chargeDirection.sqrMagnitude < 0.01f)
-                chargeDirection = transform.forward;
-
-            rb.MoveRotation(Quaternion.LookRotation(chargeDirection));
-            StartCoroutine(ExecuteAreaAttack(ratio, false, chargeDirection));
+            ReleaseAreaAttack(); // ← ya pasó el mínimo, ejecutar normal
         }
+
+    }
+    private void ReleaseAreaAttack()
+    {
+        isCharging = false;
+        animator.SetBool("areaChargeHold", false);
+
+        float ratio = Mathf.Clamp01(chargeTimer / maxChargeTime);
+        animator.SetTrigger("areaAttackSweep");
+
+        AudioManager.GetOrCreate().StopSFXCancellable();
+        AudioManager.GetOrCreate().PlaySFX("area_release");
+
+        if (chargeDirection.sqrMagnitude < 0.01f)
+            chargeDirection = transform.forward;
+
+        rb.MoveRotation(Quaternion.LookRotation(chargeDirection));
+        StartCoroutine(ExecuteAreaAttack(ratio, false, chargeDirection));
     }
 
     private IEnumerator ExecuteAreaAttack(float ratio, bool furyAttack, Vector3 dashDir = default)
@@ -511,10 +537,15 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    public void CancelAreaAttack()
+    public void CancelAreaAttack(bool force = false)
     {
+        // Solo cancela si pasó el tiempo mínimo de carga (a menos que sea forzado)
+        if (!force && isCharging && chargeTimer < minChargeToCancel) return;
+
         if (isDashing || isCharging)
         {
+            pendingAreaRelease = false;  // ← ya estaba
+            attackCancelled = false;     // ← NUEVO: limpiar también esto
             StopAllCoroutines();
             playerInput.actions["Move"].Enable();
             rb.linearVelocity = Vector3.zero;
@@ -522,7 +553,7 @@ public class PlayerCombat : MonoBehaviour
             isCharging = false;
             attackCancelled = true;
             canDirectedAttack = true;
-            canAreaAttack = true; // <-- agregar
+            canAreaAttack = true;
             animator.SetBool("areaChargeHold", false);
             animator.ResetTrigger("areaChargeStart");
             animator.SetTrigger("areaFailedStart");

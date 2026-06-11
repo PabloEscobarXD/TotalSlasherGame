@@ -22,6 +22,8 @@ public class ResultsUI : MonoBehaviour
 
     void Start()
     {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         if (ScoreManager.Instance == null) return;
         gradeText.gameObject.SetActive(false);
         bonusText.SetActive(false);

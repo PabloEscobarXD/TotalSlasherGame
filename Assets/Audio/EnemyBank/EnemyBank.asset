@@ -20,8 +20,8 @@ MonoBehaviour:
     minInterval: 0.1
   - id: enemy_block
     clip: {fileID: 8300000, guid: 955c1638eed0cbd4b9a6c08960051986, type: 3}
-    volume: 0.4
-    pitch: 0.8
+    volume: 0.3
+    pitch: 0.7
     minInterval: 0.1
   - id: enemy_attack
     clip: {fileID: 8300000, guid: ac5ac89d0398c00418c10b78ddf41229, type: 3}

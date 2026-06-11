@@ -65,6 +65,10 @@ public class FurySystem : MonoBehaviour
     {
         return IsFuryReady() ? furyDamageMultiplier : 1f;
     }
+    public bool CanFuryDash(float cost)
+    {
+        return fury >= cost;
+    }
 
     public void ConsumeFury()
     {

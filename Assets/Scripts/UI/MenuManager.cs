@@ -34,11 +34,14 @@ public class MenuManager : MonoBehaviour
         howToPlayCanvas.SetActive(false);   // ← nuevo
         EventSystem.current.SetSelectedGameObject(null);
         EventSystem.current.SetSelectedGameObject(startGameButton);
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
     }
 
     public void startGame()
     {
         Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
         AudioManager.GetOrCreate().PlaySFX("button_click");
         SceneManager.LoadScene("Nivel1");
     }
@@ -121,27 +124,48 @@ public class MenuManager : MonoBehaviour
         if (prevButton != null) prevButton.SetActive(hasPrev);
         if (nextButton != null) nextButton.SetActive(hasNext);
 
-        // Actualizar navegación del botón Volver según qué flechas están activas
+        var prevBtn = prevButton?.GetComponent<UnityEngine.UI.Button>();
+        var nextBtn = nextButton?.GetComponent<UnityEngine.UI.Button>();
+
         if (backButton != null)
         {
             var nav = backButton.navigation;
             nav.mode = UnityEngine.UI.Navigation.Mode.Explicit;
-
-            if (hasNext && nextButton != null)
-                nav.selectOnDown = nextButton.GetComponent<UnityEngine.UI.Button>();
-            else if (hasPrev && prevButton != null)
-                nav.selectOnDown = prevButton.GetComponent<UnityEngine.UI.Button>();
-            else
-                nav.selectOnDown = null;
-
+            nav.selectOnDown = hasNext ? nextBtn : (hasPrev ? prevBtn : null);
             backButton.navigation = nav;
         }
 
-        // Seleccionar el botón disponible (prioridad: derecho → izquierdo)
-        if (hasNext && nextButton != null)
-            EventSystem.current.SetSelectedGameObject(nextButton);
-        else if (hasPrev && prevButton != null)
-            EventSystem.current.SetSelectedGameObject(prevButton);
+        if (nextBtn != null)
+        {
+            var nav = nextBtn.navigation;
+            nav.mode = UnityEngine.UI.Navigation.Mode.Explicit;
+            nav.selectOnLeft = hasPrev ? prevBtn : null;
+            nav.selectOnUp = backButton;
+            nextBtn.navigation = nav;
+        }
+
+        if (prevBtn != null)
+        {
+            var nav = prevBtn.navigation;
+            nav.mode = UnityEngine.UI.Navigation.Mode.Explicit;
+            nav.selectOnRight = hasNext ? nextBtn : null;
+            nav.selectOnUp = backButton;
+            prevBtn.navigation = nav;
+        }
+
+        StartCoroutine(ReselectAfterFrame(
+            hasNext ? nextButton : (hasPrev ? prevButton : backButton?.gameObject)
+        ));
+    }
+
+    private System.Collections.IEnumerator ReselectAfterFrame(GameObject target)
+    {
+        yield return null;
+        if (target != null && target.activeInHierarchy)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(target);
+        }
     }
     // ────────────────────────────────────────────────────
 

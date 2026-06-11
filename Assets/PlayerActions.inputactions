@@ -78,6 +78,15 @@
                     "initialStateCheck": true
                 },
                 {
+                    "name": "CameraZoom",
+                    "type": "Value",
+                    "id": "c3a8881d-0022-4380-a299-f3246679d5e7",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
                     "name": "FuryAttack",
                     "type": "Button",
                     "id": "61e4d4b5-1001-4bb5-a375-9829d29f5a0d",
@@ -235,7 +244,7 @@
                     "name": "",
                     "id": "e01304f4-c36a-4a80-a037-5809d55e39f5",
                     "path": "<Gamepad>/leftTrigger",
-                    "interactions": "Hold(duration=0.1,pressPoint=0.05)",
+                    "interactions": "Hold(duration=0.06,pressPoint=0.05)",
                     "processors": "",
                     "groups": "",
                     "action": "Block",
@@ -245,7 +254,7 @@
                 {
                     "name": "",
                     "id": "a0ce874c-3bb4-45a9-8c6a-c473570a58f0",
-                    "path": "<Mouse>/rightButton",
+                    "path": "<Keyboard>/shift",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -279,7 +288,7 @@
                     "name": "",
                     "id": "6be7dc61-38a1-46ee-9d2d-a37f315cd0d2",
                     "path": "<Gamepad>/buttonEast",
-                    "interactions": "Hold(duration=0.5,pressPoint=0.01)",
+                    "interactions": "Hold(duration=0.7,pressPoint=0.01)",
                     "processors": "",
                     "groups": "",
                     "action": "AreaAttack",
@@ -289,8 +298,8 @@
                 {
                     "name": "",
                     "id": "2ae280e0-38fb-4eaf-b228-7b631097d2b8",
-                    "path": "<Keyboard>/e",
-                    "interactions": "",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "Hold(duration=0.7,pressPoint=0.01)",
                     "processors": "",
                     "groups": "",
                     "action": "AreaAttack",
@@ -333,7 +342,7 @@
                 {
                     "name": "",
                     "id": "a0e47603-e9d6-41d6-9f1b-aa5da6b9c59c",
-                    "path": "<Keyboard>/shift",
+                    "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -409,12 +418,12 @@
                 },
                 {
                     "name": "",
-                    "id": "a366bc5d-4944-4344-bf2f-e7f7bd6dd3fa",
+                    "id": "125d1b0c-fd23-4ee7-84c1-b0421ed73606",
                     "path": "<Mouse>/scroll",
                     "interactions": "",
-                    "processors": "ScaleVector2(y=-0.01)",
+                    "processors": "",
                     "groups": "",
-                    "action": "CameraMovement",
+                    "action": "CameraZoom",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -571,6 +580,17 @@
                 {
                     "name": "",
                     "id": "20e775f4-b2dc-4845-9a0d-ee42a6ec7b23",
+                    "path": "<Gamepad>/select",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Pause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5b478fd4-d26f-4dcc-a82e-f27d46dc1fc3",
                     "path": "<Gamepad>/start",
                     "interactions": "",
                     "processors": "",

@@ -82,6 +82,7 @@ public class PauseManager : MonoBehaviour
     {
         if (!optionsCanvas.activeSelf)
         {
+            Cursor.visible = true;
             pauseCanvas.SetActive(false);
             optionsCanvas.SetActive(true);
             playerInput.SwitchCurrentActionMap("UI");
@@ -103,6 +104,7 @@ public class PauseManager : MonoBehaviour
         AudioManager.GetOrCreate().PlaySFX("button_click");
         if (!controlsCanvas.activeSelf)
         {
+            Cursor.visible = true;
             pauseCanvas.SetActive(false);
             controlsCanvas.SetActive(true);
             currentControlsPage = 0;
@@ -150,23 +152,48 @@ public class PauseManager : MonoBehaviour
         if (controlsPrevButton != null) controlsPrevButton.SetActive(hasPrev);
         if (controlsNextButton != null) controlsNextButton.SetActive(hasNext);
 
+        var prevBtn = controlsPrevButton?.GetComponent<UnityEngine.UI.Button>();
+        var nextBtn = controlsNextButton?.GetComponent<UnityEngine.UI.Button>();
+
         if (controlsBackButton != null)
         {
             var nav = controlsBackButton.navigation;
             nav.mode = UnityEngine.UI.Navigation.Mode.Explicit;
-            if (hasNext && controlsNextButton != null)
-                nav.selectOnDown = controlsNextButton.GetComponent<UnityEngine.UI.Button>();
-            else if (hasPrev && controlsPrevButton != null)
-                nav.selectOnDown = controlsPrevButton.GetComponent<UnityEngine.UI.Button>();
-            else
-                nav.selectOnDown = null;
+            nav.selectOnDown = hasNext ? nextBtn : (hasPrev ? prevBtn : null);
             controlsBackButton.navigation = nav;
         }
 
-        if (hasNext && controlsNextButton != null)
-            EventSystem.current.SetSelectedGameObject(controlsNextButton);
-        else if (hasPrev && controlsPrevButton != null)
-            EventSystem.current.SetSelectedGameObject(controlsPrevButton);
+        if (nextBtn != null)
+        {
+            var nav = nextBtn.navigation;
+            nav.mode = UnityEngine.UI.Navigation.Mode.Explicit;
+            nav.selectOnLeft = hasPrev ? prevBtn : null;
+            nav.selectOnUp = controlsBackButton;
+            nextBtn.navigation = nav;
+        }
+
+        if (prevBtn != null)
+        {
+            var nav = prevBtn.navigation;
+            nav.mode = UnityEngine.UI.Navigation.Mode.Explicit;
+            nav.selectOnRight = hasNext ? nextBtn : null;
+            nav.selectOnUp = controlsBackButton;
+            prevBtn.navigation = nav;
+        }
+
+        StartCoroutine(ReselectAfterFrame(
+            hasNext ? controlsNextButton : (hasPrev ? controlsPrevButton : controlsBackButton?.gameObject)
+        ));
+    }
+
+    private System.Collections.IEnumerator ReselectAfterFrame(GameObject target)
+    {
+        yield return null;
+        if (target != null && target.activeInHierarchy)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(target);
+        }
     }
     // ────────────────────────────────────────────────────
 

@@ -93,27 +93,28 @@ public class ScoreManager : MonoBehaviour
 
     public float GetHPMultiplier(float ratio)
     {
-        if (ratio >= 1.00f) return 1.40f;
-        if (ratio >= 0.75f) return 1.25f;
-        if (ratio >= 0.50f) return 1.10f;
-        if (ratio >= 0.25f) return 1.00f;
+        if (ratio >= 0.75f) return 1.4f;
+        if (ratio >= 0.50f) return 1.2f;
+        if (ratio >= 0.35f) return 1.0f;
+        if (ratio >= 0.25f) return 0.8f;
         return 0.90f;
     }
 
     private string GetGrade(int score)
     {
-        if (score >= 7000) return "S";   // alcanzable con 75% HP + buen combo
-        if (score >= 6000) return "A+";
-        if (score >= 5000) return "A";
-        if (score >= 4000) return "A-";
-        if (score >= 3200) return "B+";
-        if (score >= 2500) return "B";
-        if (score >= 1800) return "B-";
-        if (score >= 1200) return "C+";
-        if (score >= 800) return "C";
-        if (score >= 500) return "C-";
-        if (score >= 250) return "D+";
-        if (score >= 100) return "D";
+        if (score >= 7400) return "S+";
+        if (score >= 7000) return "S";
+        if (score >= 6700) return "A+";
+        if (score >= 6400) return "A";
+        if (score >= 6100) return "A-";
+        if (score >= 5800) return "B+";
+        if (score >= 5500) return "B";
+        if (score >= 5200) return "B-";
+        if (score >= 4900) return "C+";
+        if (score >= 4600) return "C";
+        if (score >= 4300) return "C-";
+        if (score >= 4000) return "D+";
+        if (score >= 3900) return "D";
         return "D-";
     }
 

@@ -15,6 +15,7 @@ public class RoundManager : MonoBehaviour
     public GameObject playerPrefab;
     private Vector3 initialPlayerPosition;
     private Quaternion initialPlayerRotation;
+    public Animator animator;
 
     [Header("Configuración de rondas")]
     public float timeBetweenRounds = 3f;
@@ -60,6 +61,7 @@ public class RoundManager : MonoBehaviour
     private void Start()
     {
         Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
         initialPlayerPosition = playerPrefab.transform.position;
         initialPlayerRotation = playerPrefab.transform.rotation;
 
@@ -167,9 +169,10 @@ public class RoundManager : MonoBehaviour
             playerRb.linearVelocity = Vector3.zero;
             playerRb.angularVelocity = Vector3.zero;
             playerRb.position = initialPlayerPosition; // forzar también por física
+            playerRb.rotation = initialPlayerRotation;
         }
 
-        
+        animator.SetBool("isPlayerMoving", false); 
 
         currentRound = nextIndex + 1;
         SpawnRound(nextIndex);

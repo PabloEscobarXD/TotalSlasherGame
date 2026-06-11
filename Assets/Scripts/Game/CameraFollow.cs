@@ -14,6 +14,7 @@ public class CameraFollow : MonoBehaviour
     public float zoomSpeed = 5f;
     public float minZoom = 4f;
     public float maxZoom = 15f;
+    public float mouseZoomSpeed = 0.5f;
 
     [Header("Cinemática")]
     public bool cinematicMode = false;
@@ -87,11 +88,24 @@ public class CameraFollow : MonoBehaviour
             }
         }
 
+        // Zoom con stick derecho (camInput.y)
         if (Mathf.Abs(camInput.y) > 0.1f)
         {
             float currentDist = offset.magnitude;
             float newDist = Mathf.Clamp(currentDist - camInput.y * zoomSpeed * Time.deltaTime, minZoom, maxZoom);
             offset = offset.normalized * newDist;
+        }
+
+        // ← NUEVO: Zoom con scroll del mouse (acción separada)
+        if (playerInput != null)
+        {
+            Vector2 scroll = playerInput.actions["CameraZoom"].ReadValue<Vector2>();
+            if (Mathf.Abs(scroll.y) > 0.01f)
+            {
+                float currentDist = offset.magnitude;
+                float newDist = Mathf.Clamp(currentDist - scroll.y * mouseZoomSpeed, minZoom, maxZoom);
+                offset = offset.normalized * newDist;
+            }
         }
 
         Quaternion rotation = Quaternion.Euler(0, currentYaw, 0);
