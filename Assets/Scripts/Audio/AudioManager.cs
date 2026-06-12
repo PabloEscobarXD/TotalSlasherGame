@@ -1,25 +1,62 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.UI;
-using Unity.VisualScripting;
-using UnityEngine.UIElements;
+using FMOD.Studio;
+using FMODUnity;
 
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance { get; private set; }
 
-    [Header("Sources")]
-    public AudioSource musicSource;
-    public AudioSource sfxSource;
-    public AudioSource sfxCancellableSource;
-    [Header("Sound Banks")]
-    public SoundBank[] banks;
-
+    [Header("Volumen")]
     [Range(0f, 1f)] public float musicVolume = 1f;
     [Range(0f, 1f)] public float sfxVolume = 1f;
 
-    private Dictionary<string, SoundBank.SoundEntry> cache;
+    // -------------------- Instancias persistentes --------------------
+    private EventInstance musicInstance;      // event:/Music
+    private EventInstance pauseSnapshot;      // snapshot:/Pause
+    private EventInstance sfxCancellable;     // para area_charge (loop)
+
+    private bool musicStarted = false;
+    private bool pauseActive = false;
+
+    // -------------------- Cooldowns SFX --------------------
     private Dictionary<string, float> sfxCooldowns = new Dictionary<string, float>();
+
+    // -------------------- Paths --------------------
+    // Música
+    private const string MUSIC_PATH = "event:/Music";
+    private const string PAUSE_SNAPSHOT = "snapshot:/Pause";
+
+    // PlayerSFX
+    private const string SFX_AREA_CHARGE = "event:/PlayerSFX/area_charge";
+    private const string SFX_AREA_RELEASE = "event:/PlayerSFX/area_release";
+    private const string SFX_FURY_AREA = "event:/PlayerSFX/furyAreaAttack";
+    private const string SFX_FURY_SINGLE = "event:/PlayerSFX/furySingleAttack";
+    private const string SFX_PLAYER_HIT = "event:/PlayerSFX/hit";
+    private const string SFX_MAX_RAGE = "event:/PlayerSFX/maxRage";
+    private const string SFX_ATTACK_SINGLE = "event:/PlayerSFX/player_attack_single";
+    private const string SFX_BLOCK_SUCCESS = "event:/PlayerSFX/player_blockSuccess";
+
+    // EnemySFX
+    private const string SFX_ENEMY_ATTACK = "event:/EnemySFX/enemy_attack";
+    private const string SFX_ENEMY_RANGED_ATTACK = "event:/EnemySFX/enemy_rangedAttack";
+    private const string SFX_ENEMY_BLOCK = "event:/EnemySFX/enemy_block";
+    private const string SFX_ENEMY_HIT = "event:/EnemySFX/enemy_hit";
+    private const string SFX_ENEMY_DEATH = "event:/EnemySFX/enemyDeath";
+
+    // UISFX
+    private const string SFX_BONUS_REVEAL = "event:/UISFX/bonusReveal";
+    private const string SFX_ROUND_CLEAR = "event:/UISFX/roundClear";
+    private const string SFX_SCORE_COUNTING = "event:/UISFX/scoreCounting";
+    private const string SFX_WIN = "event:/UISFX/win";
+    private const string SFX_BUTTON_CLICK = "event:/UISFX/button_click";
+    private const string SFX_BUTTON_SWITCH = "event:/UISFX/button_switch";
+    private const string SFX_GRADE_REVEAL = "event:/UISFX/gradeReveal";
+
+    // Mapa de ids legacy → paths FMOD (compatibilidad con scripts existentes)
+    private Dictionary<string, string> sfxMap;
+
+    // -------------------- Lifecycle --------------------
 
     void Awake()
     {
@@ -27,147 +64,241 @@ public class AudioManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        if (musicSource == null)
-        {
-            musicSource = gameObject.AddComponent<AudioSource>();
-            musicSource.loop = true;
-        }
-        if (sfxSource == null)
-            sfxSource = gameObject.AddComponent<AudioSource>();
-
-        if (sfxCancellableSource == null)
-            sfxCancellableSource = gameObject.AddComponent<AudioSource>();
-
-        BuildCache();
-
         musicVolume = PlayerPrefs.GetFloat("MusicVolume", 1f);
         sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 1f);
+
+        BuildSFXMap();
     }
 
-    void Start()
+    private void BuildSFXMap()
     {
-        musicSource.volume = musicVolume;
-        sfxSource.volume = sfxVolume;
-    }
-
-    private void BuildCache()
-    {
-        cache = new Dictionary<string, SoundBank.SoundEntry>();
-        foreach (var bank in banks)
+        sfxMap = new Dictionary<string, string>
         {
-            if (bank == null) continue;
-            foreach (var entry in bank.sounds)
-            {
-                if (!cache.ContainsKey(entry.id))
-                    cache[entry.id] = entry;
-                else
-                    Debug.LogWarning($"AudioManager: id duplicado '{entry.id}'");
-            }
+            // PlayerSFX
+            { "area_charge",          SFX_AREA_CHARGE },
+            { "area_release",         SFX_AREA_RELEASE },
+            { "furyAreaAttack",       SFX_FURY_AREA },
+            { "furySingleAttack",     SFX_FURY_SINGLE },
+            { "player_hit",           SFX_PLAYER_HIT },
+            { "maxRage",              SFX_MAX_RAGE },
+            { "player_attack_single", SFX_ATTACK_SINGLE },
+            { "block_success",        SFX_BLOCK_SUCCESS },
+
+            // EnemySFX
+            { "enemy_attack",         SFX_ENEMY_ATTACK },
+            { "enemy_rangedAttack",   SFX_ENEMY_RANGED_ATTACK},
+            { "enemy_block",          SFX_ENEMY_BLOCK },
+            { "enemy_hit",            SFX_ENEMY_HIT },
+            { "enemyDeath",           SFX_ENEMY_DEATH },
+
+            // UISFX
+            { "bonusReveal",          SFX_BONUS_REVEAL },
+            { "roundClear",           SFX_ROUND_CLEAR },
+            { "scoreCounting",        SFX_SCORE_COUNTING },
+            { "victory",              SFX_WIN },        // legacy → win
+            { "win",                  SFX_WIN },
+            { "button_click",         SFX_BUTTON_CLICK },
+            { "button_switch",        SFX_BUTTON_SWITCH },
+            { "gradeReveal",          SFX_GRADE_REVEAL },
+        };
+    }
+
+    void OnDestroy()
+    {
+        // Liberar instancias al destruir
+        if (musicInstance.isValid())
+        {
+            musicInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+            musicInstance.release();
+        }
+        if (pauseSnapshot.isValid())
+        {
+            pauseSnapshot.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+            pauseSnapshot.release();
+        }
+        if (sfxCancellable.isValid())
+        {
+            sfxCancellable.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+            sfxCancellable.release();
         }
     }
 
     // -------------------- Música --------------------
 
-    public void PlayMusic(string id)
+    public void PlayMusic(string id = "music")
     {
-        if (!cache.TryGetValue(id, out var entry)) return;
-
-        // ← CAMBIO: también reproducir si está detenida aunque sea el mismo clip
-        if (musicSource.clip == entry.clip && musicSource.isPlaying) return;
-
-        musicSource.clip = entry.clip;
-        musicSource.volume = musicVolume * entry.volume;
-        musicSource.Play();
+        // Solo tenemos un evento de música, ignoramos el id legacy
+        if (!musicStarted)
+        {
+            musicInstance = RuntimeManager.CreateInstance(MUSIC_PATH);
+            musicInstance.setVolume(musicVolume);
+            musicInstance.start();
+            musicStarted = true;
+        }
+        else
+        {
+            // Si estaba detenida, reanudar
+            PLAYBACK_STATE state;
+            musicInstance.getPlaybackState(out state);
+            if (state == PLAYBACK_STATE.STOPPED)
+            {
+                musicInstance.start();
+            }
+        }
     }
 
-    public void StopMusic() => musicSource.Stop();
-    public void PauseMusic() => musicSource.Pause();
-    public void ResumeMusic() => musicSource.UnPause();
+    public void StopMusic()
+    {
+        if (musicInstance.isValid())
+            musicInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+    }
+
+    public void PauseMusic()
+    {
+        if (musicInstance.isValid())
+            musicInstance.setPaused(true);
+    }
+
+    public void ResumeMusic()
+    {
+        if (musicInstance.isValid())
+            musicInstance.setPaused(false);
+    }
+
+    // -------------------- Parámetros de música --------------------
+
+    /// <summary>
+    /// Cambia el estado del juego en la música dinámica.
+    /// Estados: "Menu", "Round1", "Round2", "Round3", "GameEnd"
+    /// </summary>
+    public void SetGameState(string stateName)
+    {
+        if (!musicInstance.isValid()) return;
+        musicInstance.setParameterByNameWithLabel("GameState", stateName);
+    }
+
+    /// <summary>
+    /// Actualiza el nivel de furia (0 a 1) para la música dinámica.
+    /// </summary>
+    public void SetFuryLevel(float value)
+    {
+        if (!musicInstance.isValid()) return;
+        musicInstance.setParameterByName("FuryLevel", Mathf.Clamp01(value));
+    }
+
+    /// <summary>
+    /// Actualiza la pérdida de HP (0 = full HP, 1 = muerto) para el lowpass.
+    /// </summary>
+    public void SetPlayerHPLoss(float value)
+    {
+        if (!musicInstance.isValid()) return;
+        musicInstance.setParameterByName("PlayerHPLoss", Mathf.Clamp01(value));
+    }
+
+    // -------------------- Pausa (Snapshot) --------------------
+
+    public void PauseMusicSnapshot()
+    {
+        if (pauseActive) return;
+        pauseSnapshot = RuntimeManager.CreateInstance(PAUSE_SNAPSHOT);
+        pauseSnapshot.start();
+        pauseActive = true;
+        PauseMusic();
+    }
+
+    public void ResumeMusicSnapshot()
+    {
+        if (!pauseActive) return;
+        if (pauseSnapshot.isValid())
+        {
+            pauseSnapshot.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+            pauseSnapshot.release();
+        }
+        pauseActive = false;
+        ResumeMusic();
+    }
+
+    // Métodos legacy para compatibilidad con PauseManager
+    public void PlayMusicOverlay(string id) => PauseMusicSnapshot();
+    public void StopMusicOverlay() => ResumeMusicSnapshot();
 
     // -------------------- SFX --------------------
 
     public void PlaySFX(string id)
     {
-        if (!cache.TryGetValue(id, out var entry)) return;
-        if (!CanPlaySFX(id, entry.minInterval)) return;
-        sfxSource.pitch = entry.pitch;
-        sfxSource.PlayOneShot(entry.clip, sfxVolume * entry.volume);
+        if (!sfxMap.TryGetValue(id, out string path))
+        {
+            Debug.LogWarning($"AudioManager: SFX '{id}' no encontrado en el mapa.");
+            return;
+        }
+        if (!CanPlaySFX(id)) return;
+        RuntimeManager.PlayOneShot(path);
+    }
+
+    public void PlaySFX3D(string id, Vector3 position, int instanceID = 0)
+    {
+        if (!sfxMap.TryGetValue(id, out string path))
+        {
+            Debug.LogWarning($"AudioManager: SFX3D '{id}' no encontrado.");
+            return;
+        }
+        string cooldownKey = $"{id}_3d_{instanceID}";
+        if (!CanPlaySFX(cooldownKey))
+        {
+            Debug.Log($"[SFX3D] Bloqueado por cooldown: {cooldownKey}");
+            return;
+        }
+        Debug.Log($"[SFX3D] Reproduciendo: {path} en {position}");
+        RuntimeManager.PlayOneShot(path, position);
+    }
+
+    // -------------------- SFX Cancellable (area_charge loop) --------------------
+
+    public void PlaySFXCancellable(string id)
+    {
+        StopSFXCancellable();
+
+        if (!sfxMap.TryGetValue(id, out string path)) return;
+
+        sfxCancellable = RuntimeManager.CreateInstance(path);
+        sfxCancellable.setVolume(sfxVolume);
+        sfxCancellable.start();
+    }
+
+    public void StopSFXCancellable()
+    {
+        if (sfxCancellable.isValid())
+        {
+            sfxCancellable.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+            sfxCancellable.release();
+        }
     }
 
     // -------------------- Volumen --------------------
 
     public void SetMusicVolume(float value)
     {
-        musicVolume = value;
-        // Respetar el volumen individual del clip actual
-        if (musicSource.clip != null && cache != null)
-        {
-            foreach (var entry in cache.Values)
-            {
-                if (entry.clip == musicSource.clip)
-                {
-                    musicSource.volume = musicVolume * entry.volume;
-                    break;
-                }
-            }
-        }
-        else
-        {
-            musicSource.volume = value;
-        }
-
-        if (sfxCancellableSource.isPlaying && sfxCancellableSource.loop)
-            sfxCancellableSource.volume = musicVolume;
-
-        PlayerPrefs.SetFloat("MusicVolume", value);
+        musicVolume = Mathf.Clamp01(value);
+        if (musicInstance.isValid())
+            musicInstance.setVolume(musicVolume);
+        PlayerPrefs.SetFloat("MusicVolume", musicVolume);
     }
 
     public void SetSFXVolume(float value)
     {
-        sfxVolume = value;
-        PlayerPrefs.SetFloat("SFXVolume", value);
+        sfxVolume = Mathf.Clamp01(value);
+        PlayerPrefs.SetFloat("SFXVolume", sfxVolume);
     }
 
-    private bool CanPlaySFX(string id, float minInterval)
+    // -------------------- Cooldown SFX --------------------
+
+    private bool CanPlaySFX(string id, float minInterval = 0.05f)
     {
         float now = Time.unscaledTime;
         if (sfxCooldowns.TryGetValue(id, out float lastTime))
             if (now - lastTime < minInterval) return false;
         sfxCooldowns[id] = now;
         return true;
-    }
-    public void PlaySFX3D(string id, Vector3 position)
-    {
-        if (!cache.TryGetValue(id, out var entry)) return;
-        if (!CanPlaySFX(id, entry.minInterval)) return;
-
-        GameObject tempGO = new GameObject($"SFX3D_{id}");
-        tempGO.transform.position = position;
-        AudioSource source = tempGO.AddComponent<AudioSource>();
-        source.clip = entry.clip;
-        source.volume = sfxVolume * entry.volume;
-        source.pitch = entry.pitch;
-        source.spatialBlend = 1f;
-        source.rolloffMode = AudioRolloffMode.Linear;
-        source.maxDistance = 30f;
-        source.Play();
-        Destroy(tempGO, entry.clip.length / entry.pitch);
-    }
-
-    // Reproducir un sonido cancelable (usa Play en vez de PlayOneShot)
-    public void PlaySFXCancellable(string id)
-    {
-        if (!cache.TryGetValue(id, out var entry)) return;
-        sfxCancellableSource.clip = entry.clip;
-        sfxCancellableSource.pitch = entry.pitch;
-        sfxCancellableSource.volume = sfxVolume * entry.volume;
-        sfxCancellableSource.Play();
-    }
-
-    // Cancelar el sonido cancelable actual
-    public void StopSFXCancellable()
-    {
-        sfxCancellableSource.Stop();
     }
 
     // -------------------- Lazy creation --------------------
@@ -176,21 +307,5 @@ public class AudioManager : MonoBehaviour
     {
         if (Instance != null) return Instance;
         return new GameObject("AudioManager").AddComponent<AudioManager>();
-    }
-
-    public void PlayMusicOverlay(string id)
-    {
-        if (!cache.TryGetValue(id, out var entry)) return;
-        sfxCancellableSource.pitch = 1f; // ← resetear pitch antes de reproducir
-        sfxCancellableSource.clip = entry.clip;
-        sfxCancellableSource.loop = true;
-        sfxCancellableSource.volume = musicVolume * entry.volume;
-        sfxCancellableSource.Play();
-    }
-
-    public void StopMusicOverlay()
-    {
-        sfxCancellableSource.loop = false;
-        sfxCancellableSource.Stop();
     }
 }

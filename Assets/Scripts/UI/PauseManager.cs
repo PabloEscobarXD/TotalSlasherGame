@@ -64,7 +64,6 @@ public class PauseManager : MonoBehaviour
             Time.timeScale = 0f;
             Cursor.lockState = CursorLockMode.None;
             AudioManager.GetOrCreate().PauseMusic();
-            AudioManager.GetOrCreate().PlayMusicOverlay("pause");
             playerInput.SwitchCurrentActionMap("UI");
             EventSystem.current.SetSelectedGameObject(firstPauseSelectable);
         }

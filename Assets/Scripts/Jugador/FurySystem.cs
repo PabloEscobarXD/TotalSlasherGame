@@ -26,6 +26,8 @@ public class FurySystem : MonoBehaviour
     {
         HandleDecay();
 
+        AudioManager.Instance?.SetFuryLevel(fury);
+
         if (fury >= 0.7f && !maxRageSoundPlayed)
         {
             AudioManager.Instance.PlaySFX("maxRage");

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="ParameterPreset" id="{8df0b5b8-a3e9-47c5-a8d3-d5811cb1eb60}">
+		<property name="name">
+			<value>PlayerHPLoss</value>
+		</property>
+		<relationship name="folder">
+			<destination>{ccb1055b-5f63-43da-b22a-4ffb8bdc858d}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{604ca4f1-fecf-4cd5-8c61-dd636b76088a}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{604ca4f1-fecf-4cd5-8c61-dd636b76088a}">
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+	</object>
+</objects>

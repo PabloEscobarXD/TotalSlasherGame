@@ -507,7 +507,7 @@ MonoBehaviour:
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
-            m_StringArgument: button_navigate
+            m_StringArgument: button_switch
             m_BoolArgument: 0
           m_CallState: 2
 --- !u!1 &618971332
@@ -670,7 +670,7 @@ MonoBehaviour:
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
-            m_StringArgument: button_navigate
+            m_StringArgument: button_switch
             m_BoolArgument: 0
           m_CallState: 2
 --- !u!1 &657452693
@@ -2231,9 +2231,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainMenuCanvas: {fileID: 657452693}
   optionsCanvas: {fileID: 0}
+  howToPlayCanvas: {fileID: 0}
+  howToPlayPages: []
+  prevButton: {fileID: 0}
+  nextButton: {fileID: 0}
+  backButton: {fileID: 0}
   firstOptionSelectable: {fileID: 618971332}
   optionsButtonInMainMenu: {fileID: 0}
+  howToPlayButtonInMainMenu: {fileID: 0}
   startGameButton: {fileID: 618971332}
+  firstHowToPlaySelectable: {fileID: 0}
 --- !u!4 &2111680469
 Transform:
   m_ObjectHideFlags: 0

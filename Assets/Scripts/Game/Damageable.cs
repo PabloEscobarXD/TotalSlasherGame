@@ -41,12 +41,12 @@ public class Damageable : MonoBehaviour
 
         if (isBlocking && attackType != AttackType.Tornado)
         {
-            AudioManager.GetOrCreate().PlaySFX3D("enemy_block", transform.position);
+            AudioManager.GetOrCreate().PlaySFX3D("enemy_block", transform.position, gameObject.GetInstanceID());
             return; // bloquear daño pero hit ya registrado
         }
 
 
-        AudioManager.GetOrCreate().PlaySFX3D("enemy_hit", transform.position);
+        AudioManager.GetOrCreate().PlaySFX3D("enemy_hit", transform.position, gameObject.GetInstanceID());
         currentHealth -= damage;
         GetComponent<EnemyController>()?.ApplyKnockback(attackerPosition, attackType);
         if (rend != null)
@@ -76,7 +76,7 @@ public class Damageable : MonoBehaviour
         Debug.Log($"{gameObject.name} ha muerto.");
         ScoreManager.Instance?.RegisterKill();
         OnDeath?.Invoke();
-        AudioManager.Instance.PlaySFX3D("enemy_death", transform.position);
+        AudioManager.GetOrCreate().PlaySFX3D("enemyDeath", transform.position, gameObject.GetInstanceID());
         StartCoroutine(DestroyAfterDelay());
     }
 
@@ -84,7 +84,7 @@ public class Damageable : MonoBehaviour
     {
         // Muere sin sumar score ni combo
         OnDeath?.Invoke();
-        AudioManager.Instance.PlaySFX3D("enemy_death", transform.position);
+        AudioManager.GetOrCreate().PlaySFX3D("enemyDeath", transform.position, gameObject.GetInstanceID());
         StartCoroutine(DestroyAfterDelay());
     }
 

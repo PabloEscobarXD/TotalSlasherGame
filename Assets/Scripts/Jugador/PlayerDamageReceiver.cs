@@ -88,6 +88,8 @@ public class PlayerDamageReceiver : MonoBehaviour
     {
         currentHP -= amount * damageReductionMultiplier;
 
+        AudioManager.GetOrCreate().SetPlayerHPLoss(1f - (currentHP / maxHP));
+
         Debug.Log("[PLAYER] Recibió daño. HP actual = " + currentHP);
 
         if (currentHP <= 0)

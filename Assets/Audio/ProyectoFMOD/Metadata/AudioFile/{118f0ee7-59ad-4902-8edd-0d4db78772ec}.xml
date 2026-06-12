@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="AudioFile" id="{118f0ee7-59ad-4902-8edd-0d4db78772ec}">
+		<property name="assetPath">
+			<value>furyAreaAttack.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>4.3012291666666664</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{2a1802c2-abf1-40d3-9343-c79947066be9}</destination>
+		</relationship>
+	</object>
+</objects>

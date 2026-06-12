@@ -881,69 +881,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 112074628}
   m_CullTransparentMesh: 1
---- !u!1 &139707366
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 139707367}
-  - component: {fileID: 139707368}
-  m_Layer: 0
-  m_Name: FMODEmitter
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &139707367
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 139707366}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1778564885}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &139707368
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 139707366}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CollisionTag: 
-  EventReference:
-    Guid:
-      Data1: 0
-      Data2: 0
-      Data3: 0
-      Data4: 0
-    Path: 
-  Event: 
-  EventPlayTrigger: 0
-  EventStopTrigger: 0
-  AllowFadeout: 1
-  TriggerOnce: 0
-  Preload: 0
-  NonRigidbodyVelocity: 0
-  Params: []
-  OverrideAttenuation: 0
-  OverrideMinDistance: -1
-  OverrideMaxDistance: -1
 --- !u!1001 &141836241
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1388,7 +1325,7 @@ MonoBehaviour:
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
-            m_StringArgument: button_navigation
+            m_StringArgument: button_switch
             m_BoolArgument: 0
           m_CallState: 2
 --- !u!1 &200252086
@@ -1551,7 +1488,7 @@ MonoBehaviour:
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
-            m_StringArgument: button_navigate
+            m_StringArgument: button_switch
             m_BoolArgument: 0
           m_CallState: 2
 --- !u!1001 &203422261
@@ -2723,7 +2660,7 @@ MonoBehaviour:
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
-            m_StringArgument: button_navigate
+            m_StringArgument: button_switch
             m_BoolArgument: 0
           m_CallState: 2
 --- !u!1 &353450877
@@ -2941,7 +2878,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1778564886}
+      - m_Target: {fileID: 1778564887}
         m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
         m_MethodName: SetMusicVolume
         m_Mode: 0
@@ -2952,7 +2889,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 0
+        m_CallState: 2
 --- !u!114 &363741454
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2979,40 +2916,9 @@ MonoBehaviour:
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
-            m_StringArgument: button_navigate
+            m_StringArgument: button_switch
             m_BoolArgument: 0
           m_CallState: 2
---- !u!1 &369402731
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 369402733}
-  m_Layer: 0
-  m_Name: MusicSource
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &369402733
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 369402731}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1778564885}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &390788940
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3566,7 +3472,7 @@ MonoBehaviour:
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
-            m_StringArgument: button_navigate
+            m_StringArgument: button_switch
             m_BoolArgument: 0
           m_CallState: 2
 --- !u!114 &410183607
@@ -4032,7 +3938,7 @@ MonoBehaviour:
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
-            m_StringArgument: button_navigation
+            m_StringArgument: button_switch
             m_BoolArgument: 0
           m_CallState: 2
 --- !u!1 &477832547
@@ -6966,37 +6872,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 807797696}
   m_CullTransparentMesh: 1
---- !u!1 &811978282
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 811978284}
-  m_Layer: 0
-  m_Name: SFXSource
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &811978284
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 811978282}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1778564885}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &875785242
 GameObject:
   m_ObjectHideFlags: 0
@@ -8012,7 +7887,7 @@ MonoBehaviour:
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
-            m_StringArgument: button_navigate
+            m_StringArgument: button_switch
             m_BoolArgument: 0
           m_CallState: 2
 --- !u!114 &1125447681
@@ -8961,7 +8836,7 @@ MonoBehaviour:
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
-            m_StringArgument: button_navigate
+            m_StringArgument: button_switch
             m_BoolArgument: 0
           m_CallState: 2
 --- !u!1 &1249662001
@@ -10671,6 +10546,10 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 61e4d4b5-1001-4bb5-a375-9829d29f5a0d
     m_ActionName: 'Player/FuryAttack[/XInputControllerWindows1/rightShoulder]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: c3a8881d-0022-4380-a299-f3246679d5e7
+    m_ActionName: 'Player/CameraZoom[/Mouse/scroll]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -13318,37 +13197,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1738156254}
   m_CullTransparentMesh: 1
---- !u!1 &1748804922
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1748804924}
-  m_Layer: 0
-  m_Name: SFXCancellable
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1748804924
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1748804922}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1778564885}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1751058762
 GameObject:
   m_ObjectHideFlags: 0
@@ -13769,6 +13617,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1778564885}
+  - component: {fileID: 1778564887}
   - component: {fileID: 1778564886}
   m_Layer: 0
   m_Name: AudioManager
@@ -13789,11 +13638,7 @@ Transform:
   m_LocalPosition: {x: -39.87994, y: 0, z: 116.26411}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 369402733}
-  - {fileID: 811978284}
-  - {fileID: 1748804924}
-  - {fileID: 139707367}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1778564886
@@ -13803,7 +13648,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1778564884}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c64537eba2684114cb874c99c84b8f84, type: 3}
   m_Name: 
@@ -13816,6 +13661,20 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e6eadf951da66114fb7ba15c909eb2b1, type: 2}
   - {fileID: 11400000, guid: 80d8b94f87c758942902bb6aac0eccd1, type: 2}
   - {fileID: 11400000, guid: 15abbc2e05bc7f44dae77a03bbd3489e, type: 2}
+  musicVolume: 1
+  sfxVolume: 1
+--- !u!114 &1778564887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1778564884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d54e20cb82ed5524096f37276cc24e4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   musicVolume: 1
   sfxVolume: 1
 --- !u!1 &1796295460
@@ -14258,7 +14117,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1778564886}
+      - m_Target: {fileID: 1778564887}
         m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
         m_MethodName: SetSFXVolume
         m_Mode: 0
@@ -14269,7 +14128,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: button_navigate
           m_BoolArgument: 0
-        m_CallState: 0
+        m_CallState: 2
 --- !u!114 &1826712773
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14296,7 +14155,7 @@ MonoBehaviour:
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
-            m_StringArgument: button_navigate
+            m_StringArgument: button_switch
             m_BoolArgument: 0
           m_CallState: 2
 --- !u!1 &1855189486
@@ -15285,7 +15144,7 @@ MonoBehaviour:
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
-            m_StringArgument: button_navigate
+            m_StringArgument: button_switch
             m_BoolArgument: 0
           m_CallState: 2
 --- !u!1001 &2022934373

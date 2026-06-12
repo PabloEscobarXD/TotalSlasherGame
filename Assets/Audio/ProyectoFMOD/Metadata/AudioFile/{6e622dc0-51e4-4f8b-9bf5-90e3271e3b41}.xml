@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="AudioFile" id="{6e622dc0-51e4-4f8b-9bf5-90e3271e3b41}">
+		<property name="assetPath">
+			<value>music1_Organic - Kick (84).wav</value>
+		</property>
+		<property name="isStreaming">
+			<value>true</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>301.17647916666664</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{2a1802c2-abf1-40d3-9343-c79947066be9}</destination>
+		</relationship>
+	</object>
+</objects>

@@ -68,8 +68,7 @@ public class RoundManager : MonoBehaviour
         playerMovement = playerPrefab.GetComponent<PlayerMovement>();
         playerCombat = playerPrefab.GetComponent<PlayerCombat>();
 
-        AudioManager.GetOrCreate().PlayMusic("music1");
-
+        AudioManager.GetOrCreate().SetGameState("Round1");
         SetPlayerInputEnabled(false); // bloquear antes de la primera cinemática
         StartRound(1);
     }
@@ -103,6 +102,9 @@ public class RoundManager : MonoBehaviour
 
     private void TriggerVictory()
     {
+        AudioManager.GetOrCreate().SetGameState("GameEnd"); // ← NUEVO
+        AudioManager.GetOrCreate().StopMusic();
+
         PlayerDamageReceiver player = FindAnyObjectByType<PlayerDamageReceiver>();
         if (player != null)
             ScoreManager.Instance?.RegisterHP(player.currentHP, player.maxHP);
@@ -250,6 +252,11 @@ public class RoundManager : MonoBehaviour
         // 6. Descongelar IA
         foreach (EnemyController controller in enemies)
             controller.enabled = true;
+
+        // ← NUEVO: cambiar estado de música según ronda
+        string[] states = { "Round1", "Round2", "Round3" };
+        if (index < states.Length)
+            AudioManager.GetOrCreate().SetGameState(states[index]);
 
         Debug.Log($"Ronda {index + 1} iniciada — {enemies.Length} enemigos ({rangedCount} ranged)");
         isSpawning = false;

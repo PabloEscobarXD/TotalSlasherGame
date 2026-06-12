@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="Bank" id="{bf5a7910-c6eb-4bcd-b7d1-4c5be3d7d01c}">
+		<property name="note" />
+		<property name="name">
+			<value>EnemySFX</value>
+		</property>
+		<relationship name="folder">
+			<destination>{c1491611-0cff-480d-a30e-03d21809081e}</destination>
+		</relationship>
+	</object>
+</objects>

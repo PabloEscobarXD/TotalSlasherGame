@@ -28,7 +28,7 @@ public class MenuManager : MonoBehaviour
     {
         var input = FindAnyObjectByType<PlayerInput>();
         input?.SwitchCurrentActionMap("UI");
-        AudioManager.GetOrCreate().PlayMusic("menu");
+        AudioManager.GetOrCreate().PlayMusic();
         mainMenuCanvas.SetActive(true);
         optionsCanvas.SetActive(false);
         howToPlayCanvas.SetActive(false);   // ← nuevo

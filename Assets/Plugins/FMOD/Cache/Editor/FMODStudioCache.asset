@@ -1,5 +1,442 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-9027086472515330126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c18180ecb35941f4682ae60107b85b7c, type: 3}
+  m_Name: bank:/UISFX.bank
+  m_EditorClassIdentifier: 
+  Path: Assets/Audio/ProyectoFMOD/Build/Desktop/UISFX.bank
+  Name: UISFX
+  StudioPath: bank:/UISFX
+  lastModified: 639168176182035511
+  FileSizes:
+  - Name: Desktop
+    Value: 287552
+  Exists: 1
+--- !u!114 &-8923667340721626567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/EnemySFX/enemy_block
+  m_EditorClassIdentifier: 
+  Path: event:/EnemySFX/enemy_block
+  Guid:
+    Data1: -49642913
+    Data2: 1326898947
+    Data3: 2080603799
+    Data4: 334545860
+  Banks:
+  - {fileID: 8660857843567955546}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 976
+--- !u!114 &-7689893076734747744
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/UISFX/bonusReveal
+  m_EditorClassIdentifier: 
+  Path: event:/UISFX/bonusReveal
+  Guid:
+    Data1: -204713950
+    Data2: 1090195831
+    Data3: -1823943010
+    Data4: 1042194379
+  Banks:
+  - {fileID: -9027086472515330126}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 2074
+--- !u!114 &-7433368745103484378
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/PlayerSFX/area_charge
+  m_EditorClassIdentifier: 
+  Path: event:/PlayerSFX/area_charge
+  Guid:
+    Data1: -1228705043
+    Data2: 1079034800
+    Data3: 461993127
+    Data4: -506739545
+  Banks:
+  - {fileID: -4375385174452848645}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 1399
+--- !u!114 &-6861021644481893500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/UISFX/scoreCounting
+  m_EditorClassIdentifier: 
+  Path: event:/UISFX/scoreCounting
+  Guid:
+    Data1: 1889348516
+    Data2: 1180173861
+    Data3: -437111416
+    Data4: -576430593
+  Banks:
+  - {fileID: -9027086472515330126}
+  IsStream: 1
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 14904
+--- !u!114 &-6440585838622001516
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/UISFX/gradeReveal
+  m_EditorClassIdentifier: 
+  Path: event:/UISFX/gradeReveal
+  Guid:
+    Data1: 1827787499
+    Data2: 1317555005
+    Data3: 371126181
+    Data4: 913725322
+  Banks:
+  - {fileID: -9027086472515330126}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 1906
+--- !u!114 &-6431176097414678511
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/UISFX/button_switch
+  m_EditorClassIdentifier: 
+  Path: event:/UISFX/button_switch
+  Guid:
+    Data1: -2009128236
+    Data2: 1291446785
+    Data3: 1335092387
+    Data4: -1742241661
+  Banks:
+  - {fileID: -9027086472515330126}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 189
+--- !u!114 &-5514697892395237407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/EnemySFX/enemyDeath
+  m_EditorClassIdentifier: 
+  Path: event:/EnemySFX/enemyDeath
+  Guid:
+    Data1: 954778797
+    Data2: 1122396338
+    Data3: -1604929371
+    Data4: 1839682451
+  Banks:
+  - {fileID: 8660857843567955546}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 3110
+--- !u!114 &-4375385174452848645
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c18180ecb35941f4682ae60107b85b7c, type: 3}
+  m_Name: bank:/PlayerSFX.bank
+  m_EditorClassIdentifier: 
+  Path: Assets/Audio/ProyectoFMOD/Build/Desktop/PlayerSFX.bank
+  Name: PlayerSFX
+  StudioPath: bank:/PlayerSFX
+  lastModified: 639168206162278024
+  FileSizes:
+  - Name: Desktop
+    Value: 163296
+  Exists: 1
+--- !u!114 &-3963330283371046384
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/UISFX/button_click
+  m_EditorClassIdentifier: 
+  Path: event:/UISFX/button_click
+  Guid:
+    Data1: 834918486
+    Data2: 1264751571
+    Data3: 1017115799
+    Data4: -2139385021
+  Banks:
+  - {fileID: -9027086472515330126}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 531
+--- !u!114 &-3487399496736042873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/Music/GameState
+  m_EditorClassIdentifier: 
+  Name: GameState
+  StudioPath: 
+  Min: 0
+  Max: 4
+  Default: 0
+  ID:
+    data1: 511690924
+    data2: 2284900899
+  Type: 2
+  IsGlobal: 0
+  Labels:
+  - Menu
+  - Round1
+  - Round2
+  - Round3
+  - GameEnded
+  Exists: 1
+--- !u!114 &-3122648650359821797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/EnemySFX/enemy_rangedAttack
+  m_EditorClassIdentifier: 
+  Path: event:/EnemySFX/enemy_rangedAttack
+  Guid:
+    Data1: 2124202569
+    Data2: 1218047695
+    Data3: 1063904387
+    Data4: 2006791065
+  Banks:
+  - {fileID: 8660857843567955546}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 2136
+--- !u!114 &-2056428489624340333
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/PlayerSFX/maxRage
+  m_EditorClassIdentifier: 
+  Path: event:/PlayerSFX/maxRage
+  Guid:
+    Data1: -909196321
+    Data2: 1338446891
+    Data3: -1936929139
+    Data4: 365539585
+  Banks:
+  - {fileID: -4375385174452848645}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 1021
+--- !u!114 &-1267428904053630612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/Music/FuryLevel
+  m_EditorClassIdentifier: 
+  Name: FuryLevel
+  StudioPath: 
+  Min: 0
+  Max: 1
+  Default: 0
+  ID:
+    data1: 4058059655
+    data2: 830913878
+  Type: 0
+  IsGlobal: 0
+  Labels: []
+  Exists: 1
+--- !u!114 &-604305889008499307
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/UISFX/roundClear
+  m_EditorClassIdentifier: 
+  Path: event:/UISFX/roundClear
+  Guid:
+    Data1: -903832823
+    Data2: 1294741990
+    Data3: 1074305464
+    Data4: -545648827
+  Banks:
+  - {fileID: -9027086472515330126}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 659
+--- !u!114 &-182438775419397040
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c18180ecb35941f4682ae60107b85b7c, type: 3}
+  m_Name: bank:/Master.bank
+  m_EditorClassIdentifier: 
+  Path: Assets/Audio/ProyectoFMOD/Build/Desktop/Master.bank
+  Name: Master
+  StudioPath: bank:/Master
+  lastModified: 639168212537500122
+  FileSizes:
+  - Name: Desktop
+    Value: 1550
+  Exists: 1
+--- !u!114 &-85586741225834554
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: snapshot:/Pause
+  m_EditorClassIdentifier: 
+  Path: snapshot:/Pause
+  Guid:
+    Data1: -445555492
+    Data2: 1161864601
+    Data3: -1314950751
+    Data4: -1429794462
+  Banks:
+  - {fileID: -182438775419397040}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 0
+  Parameters: []
+  MinDistance: 0
+  MaxDistance: 0
+  Length: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12,11 +449,442 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d32cf7c32a3ed8347bac48ef5ed56d82, type: 3}
   m_Name: FMODStudioCache
   m_EditorClassIdentifier: 
-  EditorBanks: []
-  EditorEvents: []
+  EditorBanks:
+  - {fileID: 4624193677843588217}
+  - {fileID: -182438775419397040}
+  - {fileID: 1750920016691119588}
+  - {fileID: 8660857843567955546}
+  - {fileID: -4375385174452848645}
+  - {fileID: -9027086472515330126}
+  EditorEvents:
+  - {fileID: -85586741225834554}
+  - {fileID: 6683625673321086567}
+  - {fileID: -8923667340721626567}
+  - {fileID: 2247205399584347334}
+  - {fileID: -5514697892395237407}
+  - {fileID: 5229268536080525518}
+  - {fileID: 8718514156793597441}
+  - {fileID: 6328516203775038811}
+  - {fileID: 7608368914429841174}
+  - {fileID: 2341093159147997392}
+  - {fileID: 8524467397599863733}
+  - {fileID: -2056428489624340333}
+  - {fileID: -7433368745103484378}
+  - {fileID: 5173809724860842524}
+  - {fileID: -604305889008499307}
+  - {fileID: -7689893076734747744}
+  - {fileID: -3963330283371046384}
+  - {fileID: -6861021644481893500}
+  - {fileID: 1579926606195056920}
+  - {fileID: -6431176097414678511}
+  - {fileID: -6440585838622001516}
+  - {fileID: -3122648650359821797}
   EditorParameters: []
-  MasterBanks: []
-  StringsBanks: []
+  MasterBanks:
+  - {fileID: -182438775419397040}
+  StringsBanks:
+  - {fileID: 4624193677843588217}
   cacheVersion: 131859
-  cacheTime: 0
-  SerializableEventsDict: []
+  cacheTime: 639168239525286626
+  SerializableEventsDict:
+  - key: snapshot:/Pause
+    index: 0
+  - key: event:/Music
+    index: 1
+  - key: event:/EnemySFX/enemy_block
+    index: 2
+  - key: event:/EnemySFX/enemy_attack
+    index: 3
+  - key: event:/EnemySFX/enemyDeath
+    index: 4
+  - key: event:/EnemySFX/enemy_hit
+    index: 5
+  - key: event:/PlayerSFX/player_attack_single
+    index: 6
+  - key: event:/PlayerSFX/player_blockSuccess
+    index: 7
+  - key: event:/PlayerSFX/furySingleAttack
+    index: 8
+  - key: event:/PlayerSFX/furyAreaAttack
+    index: 9
+  - key: event:/PlayerSFX/hit
+    index: 10
+  - key: event:/PlayerSFX/maxRage
+    index: 11
+  - key: event:/PlayerSFX/area_charge
+    index: 12
+  - key: event:/PlayerSFX/area_release
+    index: 13
+  - key: event:/UISFX/roundClear
+    index: 14
+  - key: event:/UISFX/bonusReveal
+    index: 15
+  - key: event:/UISFX/button_click
+    index: 16
+  - key: event:/UISFX/scoreCounting
+    index: 17
+  - key: event:/UISFX/win
+    index: 18
+  - key: event:/UISFX/button_switch
+    index: 19
+  - key: event:/UISFX/gradeReveal
+    index: 20
+  - key: event:/EnemySFX/enemy_rangedAttack
+    index: 21
+--- !u!114 &1579926606195056920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/UISFX/win
+  m_EditorClassIdentifier: 
+  Path: event:/UISFX/win
+  Guid:
+    Data1: 1684717227
+    Data2: 1089432371
+    Data3: 1810430140
+    Data4: 1884697198
+  Banks:
+  - {fileID: -9027086472515330126}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 4705
+--- !u!114 &1750920016691119588
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c18180ecb35941f4682ae60107b85b7c, type: 3}
+  m_Name: bank:/Music.bank
+  m_EditorClassIdentifier: 
+  Path: Assets/Audio/ProyectoFMOD/Build/Desktop/Music.bank
+  Name: Music
+  StudioPath: bank:/Music
+  lastModified: 639168176177931485
+  FileSizes:
+  - Name: Desktop
+    Value: 39415232
+  Exists: 1
+--- !u!114 &2247205399584347334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/EnemySFX/enemy_attack
+  m_EditorClassIdentifier: 
+  Path: event:/EnemySFX/enemy_attack
+  Guid:
+    Data1: 1041180070
+    Data2: 1292953914
+    Data3: 1219881389
+    Data4: 1183341307
+  Banks:
+  - {fileID: 8660857843567955546}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 642
+--- !u!114 &2341093159147997392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/PlayerSFX/furyAreaAttack
+  m_EditorClassIdentifier: 
+  Path: event:/PlayerSFX/furyAreaAttack
+  Guid:
+    Data1: 1722858941
+    Data2: 1083803404
+    Data3: 2109341336
+    Data4: 1216151395
+  Banks:
+  - {fileID: -4375385174452848645}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 4301
+--- !u!114 &4624193677843588217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c18180ecb35941f4682ae60107b85b7c, type: 3}
+  m_Name: bank:/Master.strings.bank
+  m_EditorClassIdentifier: 
+  Path: Assets/Audio/ProyectoFMOD/Build/Desktop/Master.strings.bank
+  Name: Master.strings
+  StudioPath: bank:/Master.strings
+  lastModified: 639168212537520184
+  FileSizes:
+  - Name: Desktop
+    Value: 2086
+  Exists: 1
+--- !u!114 &5173809724860842524
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/PlayerSFX/area_release
+  m_EditorClassIdentifier: 
+  Path: event:/PlayerSFX/area_release
+  Guid:
+    Data1: 1343500532
+    Data2: 1237645005
+    Data3: 845225380
+    Data4: -1629666465
+  Banks:
+  - {fileID: -4375385174452848645}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 1054
+--- !u!114 &5229268536080525518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/EnemySFX/enemy_hit
+  m_EditorClassIdentifier: 
+  Path: event:/EnemySFX/enemy_hit
+  Guid:
+    Data1: -115554829
+    Data2: 1308403082
+    Data3: 909672112
+    Data4: -2143004956
+  Banks:
+  - {fileID: 8660857843567955546}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 957
+--- !u!114 &6328516203775038811
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/PlayerSFX/player_blockSuccess
+  m_EditorClassIdentifier: 
+  Path: event:/PlayerSFX/player_blockSuccess
+  Guid:
+    Data1: 457162822
+    Data2: 1143943026
+    Data3: -1111345255
+    Data4: -74161758
+  Banks:
+  - {fileID: -4375385174452848645}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 976
+--- !u!114 &6683625673321086567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Music
+  m_EditorClassIdentifier: 
+  Path: event:/Music
+  Guid:
+    Data1: -921826608
+    Data2: 1085016350
+    Data3: 257640837
+    Data4: -173596735
+  Banks:
+  - {fileID: 1750920016691119588}
+  IsStream: 1
+  Is3D: 0
+  IsOneShot: 1
+  Parameters:
+  - {fileID: 9007940563212384618}
+  - {fileID: -3487399496736042873}
+  - {fileID: -1267428904053630612}
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 301176
+--- !u!114 &7608368914429841174
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/PlayerSFX/furySingleAttack
+  m_EditorClassIdentifier: 
+  Path: event:/PlayerSFX/furySingleAttack
+  Guid:
+    Data1: 1306938812
+    Data2: 1293517922
+    Data3: 89923509
+    Data4: 1671129271
+  Banks:
+  - {fileID: -4375385174452848645}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 2387
+--- !u!114 &8524467397599863733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/PlayerSFX/hit
+  m_EditorClassIdentifier: 
+  Path: event:/PlayerSFX/hit
+  Guid:
+    Data1: -1074233124
+    Data2: 1278129977
+    Data3: 2070307755
+    Data4: 1134182283
+  Banks:
+  - {fileID: -4375385174452848645}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 1223
+--- !u!114 &8660857843567955546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c18180ecb35941f4682ae60107b85b7c, type: 3}
+  m_Name: bank:/EnemySFX.bank
+  m_EditorClassIdentifier: 
+  Path: Assets/Audio/ProyectoFMOD/Build/Desktop/EnemySFX.bank
+  Name: EnemySFX
+  StudioPath: bank:/EnemySFX
+  lastModified: 639168239525286626
+  FileSizes:
+  - Name: Desktop
+    Value: 101824
+  Exists: 1
+--- !u!114 &8718514156793597441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/PlayerSFX/player_attack_single
+  m_EditorClassIdentifier: 
+  Path: event:/PlayerSFX/player_attack_single
+  Guid:
+    Data1: -887644108
+    Data2: 1134250085
+    Data3: -750462028
+    Data4: -1366996339
+  Banks:
+  - {fileID: -4375385174452848645}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 854
+--- !u!114 &9007940563212384618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/Music/PlayerHPLoss
+  m_EditorClassIdentifier: 
+  Name: PlayerHPLoss
+  StudioPath: 
+  Min: 0
+  Max: 1
+  Default: 0
+  ID:
+    data1: 3507414040
+    data2: 2993052076
+  Type: 0
+  IsGlobal: 0
+  Labels: []
+  Exists: 1
