@@ -97,3 +97,9 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+
+# FMOD - archivos de audio grandes (regenerables desde FMOD Studio)
+Assets/Audio/ProyectoFMOD/Assets/
+Assets/Audio/ProyectoFMOD/Build/
+Assets/Audio/ProyectoFMOD/.cache/
+Assets/Plugins/FMOD/platforms/
