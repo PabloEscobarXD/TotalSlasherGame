@@ -15,7 +15,7 @@ MonoBehaviour:
   sounds:
   - id: enemy_hit
     clip: {fileID: 8300000, guid: ddc7938299894ab49b597fa47bdd6eea, type: 3}
-    volume: 0.6
+    volume: 0.63
     pitch: 1
     minInterval: 0.1
   - id: enemy_block
@@ -25,7 +25,7 @@ MonoBehaviour:
     minInterval: 0.1
   - id: enemy_attack
     clip: {fileID: 8300000, guid: ac5ac89d0398c00418c10b78ddf41229, type: 3}
-    volume: 0.7
+    volume: 0.86
     pitch: 1
     minInterval: 0.1
   - id: enemy_rangedAttack

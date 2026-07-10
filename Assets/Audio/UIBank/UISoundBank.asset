@@ -15,17 +15,17 @@ MonoBehaviour:
   sounds:
   - id: button_navigate
     clip: {fileID: 8300000, guid: 7c763a967be4d9f4abd4beab32b39047, type: 3}
-    volume: 0.2
+    volume: 0.13
     pitch: 1
     minInterval: 0.1
   - id: button_click
     clip: {fileID: 8300000, guid: b32252443ad332845a082d5dd2a7e65a, type: 3}
-    volume: 0.35
+    volume: 0.27
     pitch: 1
     minInterval: 0.1
   - id: roundClear
     clip: {fileID: 8300000, guid: 038a0ccd34a41fd4dbc9e8c7433d191e, type: 3}
-    volume: 0.832
+    volume: 0.2
     pitch: 1
     minInterval: 0.1
   - id: gradeReveal
@@ -40,11 +40,16 @@ MonoBehaviour:
     minInterval: 0.1
   - id: scoreCounting
     clip: {fileID: 8300000, guid: 9953d8c302d0341439a763328ac70bd6, type: 3}
-    volume: 0.66
+    volume: 0.79
     pitch: 1.5
     minInterval: 0.1
   - id: victory
     clip: {fileID: 8300000, guid: 9129b7ed265146442a26b1f957afcc3a, type: 3}
-    volume: 0.6
+    volume: 0.5
     pitch: 1
     minInterval: 0.1
+  - id: comboUp
+    clip: {fileID: 8300000, guid: 077ed9eee5df223409a09a8c04879ca3, type: 3}
+    volume: 0.5
+    pitch: 1
+    minInterval: 0.05

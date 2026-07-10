@@ -76,6 +76,7 @@ public class RoundManager : MonoBehaviour
 
     private void Update()
     {
+        /*
         if (Keyboard.current.digit1Key.wasPressedThisFrame) StartRound(1);
         if (Keyboard.current.digit2Key.wasPressedThisFrame) StartRound(2);
         if (Keyboard.current.digit3Key.wasPressedThisFrame) StartRound(3);
@@ -96,6 +97,8 @@ public class RoundManager : MonoBehaviour
                 }
             }
         }
+        */
+        
 
         if (currentRound > 0 && !waitingForNextRound && !isSpawning && AllEnemiesDead())
             StartCoroutine(NextRoundRoutine());

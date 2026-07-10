@@ -53,15 +53,14 @@ public class ScoreManager : MonoBehaviour
     {
         if (!comboActive)
             comboActive = true;
-
-        comboTimer = 0f; // resetear timer del combo
+        comboTimer = 0f;
         currentComboKills++;
-
-        // Aplicar puntaje con multiplicador actual
         totalScore += scorePerKill * comboMultiplier;
-
-        // Incrementar multiplicador para el próximo kill
         comboMultiplier += 0.1f;
+
+        // ← pitch del sfx sube con el combo
+        float pitch = 1f + Mathf.Clamp(currentComboKills * 0.05f, 0f, 0.5f);
+        AudioManager.Instance?.PlaySFXWithPitch("comboUp", pitch);
     }
 
     public float GetCurrentMultiplier() => comboMultiplier;

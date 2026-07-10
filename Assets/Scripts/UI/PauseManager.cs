@@ -62,6 +62,7 @@ public class PauseManager : MonoBehaviour
         if (isPaused)
         {
             Time.timeScale = 0f;
+            Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
             AudioManager.GetOrCreate().PauseMusic();
             AudioManager.GetOrCreate().PlayMusicOverlay("pause");
@@ -70,6 +71,7 @@ public class PauseManager : MonoBehaviour
         }
         else
         {
+            Cursor.visible = false;
             Time.timeScale = 1f;
             Cursor.lockState = CursorLockMode.Locked;
             AudioManager.GetOrCreate().StopMusicOverlay();

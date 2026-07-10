@@ -20,17 +20,17 @@ MonoBehaviour:
     minInterval: 0.1
   - id: block_success
     clip: {fileID: 8300000, guid: a2d7b785b751a5e4dbc2ca75a8f7e03c, type: 3}
-    volume: 1
+    volume: 0.2
     pitch: 1
     minInterval: 0.1
   - id: player_hit
     clip: {fileID: 8300000, guid: 45cb3ebfb89efe44db09a857fad6dca9, type: 3}
-    volume: 1
+    volume: 0.79
     pitch: 1
     minInterval: 0.1
   - id: area_charge
     clip: {fileID: 8300000, guid: 52465b1c7ef6cf149bf0dc4039ae0fa7, type: 3}
-    volume: 0.6
+    volume: 0.3
     pitch: 1
     minInterval: 0.1
   - id: area_release
@@ -40,16 +40,16 @@ MonoBehaviour:
     minInterval: 0.1
   - id: maxRage
     clip: {fileID: 8300000, guid: 47a94f6ffa863ad4e9a53a81c7986bb3, type: 3}
-    volume: 0.8
+    volume: 0.3
     pitch: 1
     minInterval: 0.1
   - id: furySingleAttack
     clip: {fileID: 8300000, guid: 08af1cb1ebcedf44fa4283576c56871c, type: 3}
-    volume: 0.8
-    pitch: 1.5
+    volume: 0.3
+    pitch: 1
     minInterval: 0.1
   - id: furyAreaAttack
     clip: {fileID: 8300000, guid: edec066302647024ab2eed45a85b8ccd, type: 3}
-    volume: 1
+    volume: 0.4
     pitch: 1
     minInterval: 0.1

@@ -193,4 +193,11 @@ public class AudioManager : MonoBehaviour
         sfxCancellableSource.loop = false;
         sfxCancellableSource.Stop();
     }
+    public void PlaySFXWithPitch(string id, float pitch)
+    {
+        if (!cache.TryGetValue(id, out var entry)) return;
+        if (!CanPlaySFX(id, entry.minInterval)) return;
+        sfxSource.pitch = pitch;
+        sfxSource.PlayOneShot(entry.clip, sfxVolume * entry.volume);
+    }
 }
